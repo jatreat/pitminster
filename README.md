@@ -23,7 +23,7 @@ public/            the website (plain HTML, CSS, JS, images) — this is what ge
   images/          photographs (CC BY-SA 2.0; see images/CREDITS.md)
 functions/api/     the family wall, contact form and admin API (Cloudflare Pages Functions)
 schema.sql         the database tables
-wrangler.toml      Cloudflare project settings
+wrangler.toml.example  Cloudflare settings for reference (bindings and secrets are set in the dashboard)
 tools/build.py     rebuilds the pages from the shared header/footer (optional; the HTML can also be edited directly)
 extras/            the 3D game and the untouched original of the trail game, kept out of the site but not thrown away
 ```
@@ -34,7 +34,7 @@ extras/            the 3D game and the untouched original of the trail game, kep
 
 2. **Create the Cloudflare Pages project.** In the Cloudflare dashboard: Workers & Pages → Create → Pages → Connect to Git → pick the repository. Build settings: no build command; build output directory `public`. Deploy. You get a `*.pages.dev` address straight away.
 
-3. **Create the database.** Workers & Pages → D1 → Create database, named `pitminster`. Open it, go to Console, paste the contents of `schema.sql` and run it. Copy the database ID into `wrangler.toml` (or skip the file and bind it in the dashboard: Pages project → Settings → Bindings → add D1 binding with variable name `DB`).
+3. **Create the database.** Workers & Pages → D1 → Create database, named `pitminster`. Open it, go to Console, paste the contents of `schema.sql` and run it. Bind it in the dashboard: Pages project → Settings → Bindings → add D1 binding with variable name `DB`.
 
 4. **Set the editors' key.** Pages project → Settings → Variables and Secrets → add a secret `ADMIN_KEY` with a long random string (a password manager will make one). That string is what you type into `admin.html` to approve notes. Redeploy once after adding bindings and secrets.
 
