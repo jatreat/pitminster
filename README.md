@@ -63,3 +63,4 @@ To swap in your own photographs: replace the files in `public/images/` keeping t
 - Get the parish's online giving link from the PCC and put it in `visit.html` (the box under "Giving to the church").
 - Photographs of the Treat brass, the font and the east window (the site has none; Geograph had no interior shots other than the Coles tomb).
 - Ask the vicar or a churchwarden to read the church page for errors.
+
