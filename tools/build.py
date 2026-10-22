@@ -25,6 +25,11 @@ NAV = [
 ]
 
 
+def clean_path(filename):
+    """The address Cloudflare Pages actually serves: / for the home page, /church for church.html."""
+    return "" if filename == "index.html" else filename[:-5] if filename.endswith(".html") else filename
+
+
 def head(title, desc, canonical, extra=""):
     return f"""<!doctype html>
 <html lang="en">
@@ -33,7 +38,7 @@ def head(title, desc, canonical, extra=""):
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title}</title>
 <meta name="description" content="{desc}">
-<link rel="canonical" href="https://pitminsterchurchonline.org/{canonical}">
+<link rel="canonical" href="https://pitminsterchurchonline.org/{clean_path(canonical)}">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:image" content="https://pitminsterchurchonline.org/images/church-at-dusk.jpg">
