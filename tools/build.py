@@ -426,7 +426,7 @@ GAMES = """
 <p><a class="btn" href="games/treat-trail.html">Play The Treat Trail</a></p>
 </article>
 </div>
-<p class="small muted" style="margin-top:2rem;max-width:66ch">These are fan-made family histories. The landscapes, buildings and people are stylised. If a date or a name in them is wrong, <a href="contact.html">tell the editors</a> and it will be fixed in the next version.</p>
+<p class="small muted" style="margin-top:2rem;max-width:66ch">These are fan-made family histories. The landscapes, buildings and people are stylised. If a date or a name in them is wrong, <a href="contact.html">tell the editors</a> and it will be fixed in the next version. The family keeps its own page, with the games, the notable Treats and the line of descent, at <a href="https://treatfamily.org">treatfamily.org</a>.</p>
 </div></section>
 """
 
