@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>The Treat Trail — 389 Years from Pitminster</title>
+<style>
+:root{
+  --red:#a32638; --red2:#7a1c2a; --gold:#c9a227; --gold2:#9a7b1a;
+  --silver:#d7dadd; --ink:#241a12; --ink2:#4a3a28;
+  --parch:#f4e8cf; --parch2:#e7d5ae; --panel:#fdf6e6;
+  --good:#2e6b34; --bad:#9c2121;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%;background:#1b130d}
+body{font-family:Georgia,'Iowan Old Style','Times New Roman',serif;color:var(--ink)}
+#app{
+  display:flex; flex-direction:column;
+  height:100vh; height:100dvh;
+  max-width:560px; margin:0 auto;
+  background:var(--parch);
+  box-shadow:0 0 40px rgba(0,0,0,.6);
+}
+/* ---- top status strip ---- */
+#status{
+  flex:none; background:var(--ink); color:var(--parch);
+  padding:6px 10px; padding-top:calc(6px + env(safe-area-inset-top));
+  font-size:13px; line-height:1.5; display:none;
+}
+#status .row{display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap}
+#status b{color:var(--gold)}
+/* ---- error banner ---- */
+#errbar{
+  display:none; flex:none; background:#7a1c2a; color:#fff;
+  padding:8px 10px; font-size:12px; font-family:ui-monospace,Menlo,monospace;
+}
+/* ---- main scroll area ---- */
+#main{
+  flex:1 1 0; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  padding:14px 14px 20px;
+}
+/* ---- bottom action bar: in normal flex flow, can never be pushed off-screen ---- */
+#bar{
+  flex:none; display:flex; gap:8px; flex-wrap:wrap;
+  padding:10px; padding-bottom:calc(10px + env(safe-area-inset-bottom));
+  background:var(--parch2); border-top:3px double var(--ink2);
+}
+button{
+  font-family:inherit; font-size:16px; font-weight:bold;
+  min-height:48px; padding:8px 12px; flex:1 1 40%;
+  background:var(--panel); color:var(--ink);
+  border:2px solid var(--ink2); border-radius:8px;
+  box-shadow:0 2px 0 var(--ink2); cursor:pointer;
+}
+button:active{transform:translateY(2px); box-shadow:none}
+button.primary{background:var(--red); color:#fff; border-color:var(--red2); box-shadow:0 2px 0 var(--red2)}
+button.gold{background:var(--gold); border-color:var(--gold2); box-shadow:0 2px 0 var(--gold2)}
+button.small{min-height:40px; font-size:14px; flex:1 1 28%}
+button:disabled{opacity:.45; cursor:default}
+h1{font-size:26px; margin:8px 0; text-align:center; color:var(--red2); letter-spacing:1px}
+h2{font-size:20px; margin:10px 0 6px; color:var(--red2)}
+h3{font-size:16px; margin:10px 0 4px; color:var(--ink2)}
+p{margin:6px 0; line-height:1.45}
+.center{text-align:center}
+.muted{color:var(--ink2); font-size:14px}
+.card{
+  background:var(--panel); border:2px solid var(--ink2); border-radius:10px;
+  padding:12px; margin:10px 0; box-shadow:2px 3px 0 rgba(36,26,18,.25);
+}
+.hist{
+  background:linear-gradient(#fdf6e6,#f1e3c0); border:1px solid var(--gold2);
+  border-left:6px solid var(--gold); border-radius:6px; padding:10px 12px; margin:10px 0;
+  font-size:15px; line-height:1.5;
+}
+.hist .tag{font-size:11px; letter-spacing:2px; color:var(--gold2); font-weight:bold}
+.stat{display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px dotted #c9b890; font-size:15px}
+.stat b{font-variant-numeric:tabular-nums}
+.party .stat span.sick{color:var(--bad); font-style:italic}
+.choice{display:block; width:100%; text-align:left; margin:8px 0; flex:none}
+.bigicon{font-size:44px; text-align:center; margin:4px 0}
+.scenesvg{display:block; width:100%; border:2px solid var(--ink2); border-radius:10px; margin:8px 0; background:#9db8d2}
+.lmg{transition:transform .7s linear}
+.cloudA{animation:cloudmove 46s linear infinite}
+.cloudB{animation:cloudmove 70s linear infinite; animation-delay:-35s}
+.waveA{animation:waveshift 6s linear infinite}
+.waveB{animation:waveshift 9.5s linear infinite reverse}
+.scroll{animation:drift 7s linear infinite; animation-play-state:paused}
+.go .scroll{animation-play-state:running}
+.wheel{animation:spin 1.5s linear infinite; animation-play-state:paused; transform-box:fill-box; transform-origin:center}
+.go .wheel{animation-play-state:running}
+.go .roadline{animation:dashmove 1.1s linear infinite}
+.bobber{animation:bob2 1.8s ease-in-out infinite}
+.roller{animation:roll 5s ease-in-out infinite; transform-box:fill-box; transform-origin:center}
+.rainfx,.snowfx,.fogfx{display:none}
+.rain .rainfx{display:block}
+.snow .snowfx{display:block}
+.fog .fogfx{display:block}
+.rainfall{animation:fall .6s linear infinite}
+.snowfall{animation:fall 3.4s linear infinite}
+@keyframes cloudmove{from{transform:translateX(-90px)}to{transform:translateX(430px)}}
+@keyframes waveshift{from{transform:translateX(0)}to{transform:translateX(-120px)}}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-360px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bob2{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes roll{0%,100%{transform:rotate(-1.6deg) translateY(0)}50%{transform:rotate(1.8deg) translateY(-3px)}}
+@keyframes fall{from{transform:translateY(0)}to{transform:translateY(170px)}}
+@keyframes dashmove{from{stroke-dashoffset:0}to{stroke-dashoffset:-26}}
+.titleart{margin:6px auto; display:block}
+.progress{height:14px; background:#d9c79c; border:1px solid var(--ink2); border-radius:7px; overflow:hidden; margin:6px 0}
+.progress i{display:block; height:100%; background:var(--red)}
+.log{font-size:14px; max-height:120px; overflow-y:auto; background:#f9efd8; border:1px dashed var(--ink2);
+  border-radius:6px; padding:8px; margin-top:8px}
+.log div{padding:1px 0; border-bottom:1px dotted #d8c69c}
+input[type=text]{
+  font-family:inherit; font-size:16px; padding:10px; width:100%;
+  border:2px solid var(--ink2); border-radius:8px; background:#fff; margin:4px 0;
+}
+table.store{width:100%; border-collapse:collapse; font-size:15px}
+table.store td{padding:7px 4px; border-bottom:1px dotted #c9b890; vertical-align:middle}
+table.store td.r{text-align:right; white-space:nowrap}
+.qbtn{min-height:40px; min-width:40px; flex:none; font-size:20px; padding:0 12px}
+.huntbox{position:relative; height:300px; background:linear-gradient(#cfe3c0,#9dbd86);
+  border:2px solid var(--ink2); border-radius:10px; overflow:hidden; touch-action:manipulation}
+.huntbox.sea{background:linear-gradient(#9db8d2,#39618c)}
+.huntbox .animal{position:absolute; font-size:34px; user-select:none; cursor:crosshair; transition:none}
+.huntbox .pow{position:absolute; font-size:26px; pointer-events:none}
+.grave{background:#3a3a3a; color:#eee; border-radius:60px 60px 6px 6px; padding:26px 16px 16px;
+  text-align:center; max-width:300px; margin:14px auto; border:3px solid #222}
+.grave .rip{font-size:30px}
+.tombnote{font-style:italic}
+.scorebar{display:flex; justify-content:space-between; font-size:15px; padding:2px 0}
+.kbd{font-family:ui-monospace,Menlo,monospace; font-size:13px; background:#eee2c4; padding:1px 5px; border-radius:4px}
+.flash{animation:flash .5s 3}
+@keyframes flash{50%{background:#ffe9a8}}
+.crestwrap{display:flex; justify-content:center; margin:4px 0}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<g id="crestArt">
+  <!-- mantling -->
+  <g stroke="#241a12" stroke-width="2" stroke-linejoin="round">
+    <path d="M100,52 C55,30 28,52 36,86 C12,82 4,114 26,128 C8,140 16,170 42,168 C30,190 52,206 70,194 C66,176 76,162 88,158 C70,140 62,120 70,100 C78,82 90,66 100,62 Z" fill="#a32638"/>
+    <path d="M100,52 C60,42 40,62 48,90 C30,92 26,116 44,124 C32,138 42,160 62,156 C58,142 66,132 76,128 C62,112 60,96 68,82 C76,68 90,58 100,56 Z" fill="#c9a227"/>
+    <path d="M200,52 C245,30 272,52 264,86 C288,82 296,114 274,128 C292,140 284,170 258,168 C270,190 248,206 230,194 C234,176 224,162 212,158 C230,140 238,120 230,100 C222,82 210,66 200,62 Z" fill="#a32638"/>
+    <path d="M200,52 C240,42 260,62 252,90 C270,92 274,116 256,124 C268,138 258,160 238,156 C242,142 234,132 224,128 C238,112 240,96 232,82 C224,68 210,58 200,56 Z" fill="#c9a227"/>
+  </g>
+  <!-- helm -->
+  <g stroke="#241a12" stroke-width="2">
+    <path d="M150,40 C128,40 116,56 116,74 L116,92 C116,98 122,102 130,102 L170,102 C178,102 184,98 184,74 C184,56 172,40 150,40 Z" fill="#7e8a92"/>
+    <path d="M118,70 L150,64 L182,70 L182,78 L150,72 L118,78 Z" fill="#5d676e"/>
+    <circle cx="150" cy="86" r="5" fill="#c9a227"/>
+  </g>
+  <!-- coronet + torse -->
+  <g stroke="#241a12" stroke-width="2">
+    <rect x="126" y="28" width="48" height="12" rx="3" fill="#c9a227"/>
+    <path d="M128,28 L134,16 L142,28 L150,14 L158,28 L166,16 L172,28 Z" fill="#c9a227"/>
+    <rect x="132" y="2" width="36" height="26" rx="6" fill="#f2ede0"/>
+    <line x1="132" y1="11" x2="168" y2="11" stroke="#a32638"/>
+    <line x1="132" y1="20" x2="168" y2="20" stroke="#a32638"/>
+  </g>
+  <!-- unicorn head -->
+  <g stroke="#241a12" stroke-width="2" stroke-linejoin="round">
+    <path d="M150,8 C146,-6 138,-18 128,-24 C134,-26 142,-25 147,-21 C146,-30 142,-38 136,-42 C144,-43 152,-38 156,-30 C160,-38 168,-42 176,-41 C170,-34 168,-26 169,-18 C175,-20 181,-18 184,-13 C176,-12 170,-7 167,0 C163,6 158,9 150,8 Z" fill="#1d1812"/>
+    <path d="M156,-30 L162,-66 L166,-30 Z" fill="#e8e2d2"/>
+    <line x1="158" y1="-42" x2="165" y2="-44" stroke="#241a12" stroke-width="1.5"/>
+    <line x1="159" y1="-52" x2="164" y2="-54" stroke="#241a12" stroke-width="1.5"/>
+  </g>
+  <!-- shield -->
+  <g stroke="#241a12" stroke-width="3">
+    <clipPath id="shieldClip">
+      <path d="M92,96 L208,96 L208,176 C208,210 184,232 150,246 C116,232 92,210 92,176 Z"/>
+    </clipPath>
+    <g clip-path="url(#shieldClip)">
+      <rect x="92" y="96" width="116" height="160" fill="#a32638"/>
+      <rect x="108" y="96" width="17" height="160" fill="#c9a227"/>
+      <rect x="141" y="96" width="17" height="160" fill="#c9a227"/>
+      <rect x="174" y="96" width="17" height="160" fill="#c9a227"/>
+      <g stroke="#241a12" stroke-width="1.5">
+        <line x1="108" y1="96" x2="108" y2="256"/><line x1="125" y1="96" x2="125" y2="256"/>
+        <line x1="141" y1="96" x2="141" y2="256"/><line x1="158" y1="96" x2="158" y2="256"/>
+        <line x1="174" y1="96" x2="174" y2="256"/><line x1="191" y1="96" x2="191" y2="256"/>
+      </g>
+      <!-- canton argent -->
+      <rect x="92" y="96" width="52" height="48" fill="#d7dadd" stroke="#241a12" stroke-width="2"/>
+      <!-- bear rampant (sable), facing dexter -->
+      <g fill="#16110c" transform="translate(96,99) scale(.44)">
+        <ellipse cx="58" cy="62" rx="20" ry="30" transform="rotate(18 58 62)"/>
+        <circle cx="40" cy="26" r="13"/>
+        <circle cx="31" cy="17" r="4.5"/><circle cx="47" cy="14" r="4.5"/>
+        <path d="M30,30 C24,32 20,36 19,40 L31,40 Z"/>
+        <path d="M44,40 L20,52 L8,46 L12,58 L40,62 Z"/>
+        <path d="M52,52 L30,72 L18,70 L26,82 L52,72 Z"/>
+        <path d="M62,86 L52,104 L58,106 L68,92 Z"/>
+        <path d="M72,82 L74,102 L82,102 L80,84 Z"/>
+        <path d="M74,48 L84,42 L86,50 L78,56 Z"/>
+      </g>
+    </g>
+    <path d="M92,96 L208,96 L208,176 C208,210 184,232 150,246 C116,232 92,210 92,176 Z" fill="none"/>
+  </g>
+  <!-- scroll -->
+  <g stroke="#241a12" stroke-width="2">
+    <path d="M86,258 C110,250 190,250 214,258 L210,276 C186,268 114,268 90,276 Z" fill="#f2ead6"/>
+    <text x="150" y="271" text-anchor="middle" font-size="17" font-weight="bold" font-family="Georgia,serif" fill="#241a12" stroke="none" letter-spacing="4">TREAT</text>
+  </g>
+</g>
+
+<!-- period ship, facing right -->
+<g id="shipArt" stroke="#241a12" stroke-width="1.6" stroke-linejoin="round">
+  <line x1="72" y1="8" x2="128" y2="78" stroke="#3a2c1c" stroke-width="1"/>
+  <line x1="72" y1="8" x2="20" y2="62" stroke="#3a2c1c" stroke-width="1"/>
+  <line x1="102" y1="22" x2="146" y2="64" stroke="#3a2c1c" stroke-width="1"/>
+  <line x1="72" y1="6" x2="72" y2="82" stroke="#4a3520" stroke-width="3"/>
+  <line x1="102" y1="20" x2="102" y2="82" stroke="#4a3520" stroke-width="3"/>
+  <line x1="38" y1="28" x2="38" y2="80" stroke="#4a3520" stroke-width="3"/>
+  <line x1="124" y1="76" x2="148" y2="62" stroke="#4a3520" stroke-width="3"/>
+  <path d="M124,72 C134,68 140,66 145,63 L124,52 Z" fill="#efe5cc"/>
+  <path d="M54,14 Q72,22 90,14 L88,38 Q72,46 56,38 Z" fill="#f2e8d0"/>
+  <path d="M52,42 Q72,50 92,42 L90,66 Q72,74 54,66 Z" fill="#efe5cc"/>
+  <path d="M88,26 Q102,32 116,26 L114,44 Q102,50 90,44 Z" fill="#f2e8d0"/>
+  <path d="M88,48 Q102,54 116,48 L114,64 Q102,70 90,64 Z" fill="#efe5cc"/>
+  <path d="M38,34 L38,72 L18,66 Q22,48 38,34 Z" fill="#efe5cc"/>
+  <path d="M72,6 L86,10 L72,15 Z" fill="#a32638"/>
+  <path d="M12,76 L14,60 L30,62 L30,78 Z" fill="#7a5536"/>
+  <line x1="15" y1="68" x2="29" y2="69" stroke="#c9a227" stroke-width="2"/>
+  <path d="M12,76 L18,92 C42,101 94,101 114,93 L128,76 L116,80 C88,87 44,87 22,79 Z" fill="#6b4a2f"/>
+  <path d="M12,76 L22,79 C44,87 88,87 116,80 L128,76 L126,82 C94,90 46,90 16,81 Z" fill="#54381f"/>
+  <path d="M22,80 C44,87 88,87 114,81" fill="none" stroke="#c9a227" stroke-width="2"/>
+</g>
+<!-- covered ox-wagon, facing right -->
+<g id="oxwagonArt" stroke="#241a12" stroke-width="1.6" stroke-linejoin="round">
+  <path d="M8,52 Q12,20 40,20 L48,20 Q74,20 78,52 Z" fill="#f2e8d0"/>
+  <path d="M20,49 Q22,27 38,25 M34,50 Q35,23 44,23 M52,50 Q54,24 48,23 M66,50 Q64,27 52,25" fill="none" stroke="#cbb98e" stroke-width="1.3"/>
+  <rect x="6" y="50" width="76" height="20" fill="#6b4a2f"/>
+  <line x1="6" y1="56" x2="82" y2="56" stroke="#54381f" stroke-width="2"/>
+  <line x1="82" y1="66" x2="112" y2="68" stroke="#4a3520" stroke-width="3"/>
+  <ellipse cx="116" cy="64" rx="19" ry="11" fill="#9c7848"/>
+  <line x1="104" y1="72" x2="104" y2="90"/><line x1="124" y1="72" x2="124" y2="90"/>
+  <ellipse cx="120" cy="68" rx="20" ry="12" fill="#c89a64"/>
+  <rect x="124" y="54" width="5" height="16" rx="2" fill="#4a3520"/>
+  <path d="M133,51 C127,42 132,36 138,47 Z" fill="#f2e8d0"/>
+  <path d="M143,51 C149,42 144,36 138,47 Z" fill="#f2e8d0"/>
+  <circle cx="138" cy="60" r="8" fill="#c89a64"/>
+  <ellipse cx="142" cy="63" rx="4.5" ry="3.2" fill="#b08a5a"/>
+  <circle cx="140" cy="57" r="1.3" fill="#241a12" stroke="none"/>
+  <line x1="110" y1="77" x2="110" y2="93"/><line x1="128" y1="77" x2="128" y2="93"/>
+  <path d="M101,64 Q96,74 100,82" fill="none"/>
+  <g class="wheel"><circle cx="26" cy="78" r="14" fill="#a07f4a"/><line x1="26" y1="65" x2="26" y2="91"/><line x1="13" y1="78" x2="39" y2="78"/><line x1="17" y1="69" x2="35" y2="87"/><line x1="35" y1="69" x2="17" y2="87"/><circle cx="26" cy="78" r="3" fill="#241a12"/></g>
+  <g class="wheel"><circle cx="66" cy="80" r="11" fill="#a07f4a"/><line x1="66" y1="70" x2="66" y2="90"/><line x1="56" y1="80" x2="76" y2="80"/><line x1="59" y1="73" x2="73" y2="87"/><line x1="73" y1="73" x2="59" y2="87"/><circle cx="66" cy="80" r="2.5" fill="#241a12"/></g>
+</g>
+<!-- horse & cart, facing right -->
+<g id="horsecartArt" stroke="#241a12" stroke-width="1.6" stroke-linejoin="round">
+  <rect x="8" y="48" width="56" height="18" fill="#6b4a2f"/>
+  <line x1="8" y1="54" x2="64" y2="54" stroke="#54381f" stroke-width="2"/>
+  <circle cx="32" cy="30" r="6" fill="#241a12"/>
+  <line x1="23" y1="26" x2="41" y2="26" stroke="#241a12" stroke-width="3"/>
+  <path d="M26,36 Q32,34 38,36 L38,48 L26,48 Z" fill="#241a12"/>
+  <line x1="64" y1="60" x2="92" y2="62" stroke="#4a3520" stroke-width="3"/>
+  <ellipse cx="102" cy="63" rx="22" ry="10.5" fill="#5a3c22"/>
+  <path d="M110,58 C114,48 120,40 129,36 L136,42 C132,47 128,54 126,63 L112,64 Z" fill="#5a3c22"/>
+  <circle cx="132" cy="40" r="6" fill="#5a3c22"/>
+  <ellipse cx="138" cy="43" rx="4.5" ry="3" fill="#5a3c22"/>
+  <path d="M130,37 L127,28 L134,33 Z" fill="#5a3c22"/>
+  <circle cx="133" cy="38" r="1.2" fill="#f2e8d0" stroke="none"/>
+  <path d="M110,57 Q118,44 128,36" stroke-width="3" fill="none" stroke="#241a12"/>
+  <path d="M82,59 Q76,70 82,82" fill="none"/>
+  <line x1="92" y1="70" x2="92" y2="92"/><line x1="100" y1="72" x2="100" y2="92"/><line x1="108" y1="72" x2="108" y2="92"/><line x1="116" y1="70" x2="116" y2="92"/>
+  <path d="M38,30 Q88,36 130,42" fill="none" stroke="#54381f" stroke-width="1.4"/>
+  <g class="wheel"><circle cx="36" cy="76" r="14" fill="#a07f4a"/><line x1="36" y1="63" x2="36" y2="89"/><line x1="23" y1="76" x2="49" y2="76"/><line x1="27" y1="67" x2="45" y2="85"/><line x1="45" y1="67" x2="27" y2="85"/><circle cx="36" cy="76" r="3" fill="#241a12"/></g>
+</g>
+<!-- vintage motorcar, facing right -->
+<g id="motorcarArt" stroke="#241a12" stroke-width="1.6" stroke-linejoin="round">
+  <path d="M30,46 L34,28 L62,28 L66,46 Z" fill="#7a1c2a"/>
+  <path d="M38,32 L58,32 L60,42 L36,42 Z" fill="#cfe3f5"/>
+  <path d="M10,62 L14,48 L30,46 L66,46 L74,48 C88,48 100,52 112,54 L124,58 L124,68 L10,68 Z" fill="#a32638"/>
+  <rect x="12" y="50" width="14" height="10" fill="#8a6b40"/>
+  <path d="M22,68 A14,14 0 0 1 50,68" fill="none" stroke="#241a12" stroke-width="4"/>
+  <path d="M88,68 A14,14 0 0 1 116,68" fill="none" stroke="#241a12" stroke-width="4"/>
+  <circle cx="121" cy="54" r="4" fill="#c9a227"/>
+  <line x1="117" y1="58" x2="117" y2="68" stroke="#54381f" stroke-width="2"/>
+  <g class="wheel"><circle cx="36" cy="70" r="11" fill="#2c2c2c"/><circle cx="36" cy="70" r="5" fill="#cbb98e"/><line x1="36" y1="65" x2="36" y2="75"/><line x1="31" y1="70" x2="41" y2="70"/></g>
+  <g class="wheel"><circle cx="102" cy="70" r="11" fill="#2c2c2c"/><circle cx="102" cy="70" r="5" fill="#cbb98e"/><line x1="102" y1="65" x2="102" y2="75"/><line x1="97" y1="70" x2="107" y2="70"/></g>
+</g>
+<!-- airliner, facing right -->
+<g id="planeArt" stroke="#241a12" stroke-width="1.6" stroke-linejoin="round">
+  <path d="M18,41 L6,12 L20,12 L38,39 Z" fill="#d7dadd"/>
+  <path d="M10,38 L150,38 C157,39 157,44 151,46 L24,52 C14,50 8,44 10,38 Z" fill="#f6f6f4"/>
+  <path d="M72,44 L44,68 L62,68 L94,46 Z" fill="#b9c2c9"/>
+  <line x1="14" y1="44" x2="146" y2="42" stroke="#a32638" stroke-width="2"/>
+  <path d="M142,39 C146,39 149,41 150,43 L142,44 Z" fill="#36506a"/>
+  <circle cx="46" cy="42" r="1.6" fill="#36506a" stroke="none"/><circle cx="58" cy="42" r="1.6" fill="#36506a" stroke="none"/><circle cx="70" cy="42" r="1.6" fill="#36506a" stroke="none"/><circle cx="82" cy="42" r="1.6" fill="#36506a" stroke="none"/><circle cx="94" cy="41.5" r="1.6" fill="#36506a" stroke="none"/><circle cx="106" cy="41.5" r="1.6" fill="#36506a" stroke="none"/><circle cx="118" cy="41" r="1.6" fill="#36506a" stroke="none"/>
+</g>
+</defs>
+</svg>
+
+<div id="app">
+  <div id="errbar"></div>
+  <div id="status"></div>
+  <div id="main">
+    <!-- Static fallback: visible ONLY when JavaScript isn't running (file previews). The game replaces this instantly. -->
+    <h1>THE TREAT TRAIL</h1>
+    <div class="hist">
+      <span class="tag">ALMOST THERE</span><br>
+      If you can read this, you’re looking at a <b>preview</b> — previews show the page but won’t run the game.
+      It needs a real browser. Takes ten seconds:
+    </div>
+    <div class="card">
+      <p><b>📱 iPhone:</b> Tap the share icon and <b>Save to Files</b>. Then open the <b>Files</b> app, press and hold <b>treat-trail.html</b>, choose <b>Share</b>, and pick <b>Safari</b> (in the row of app icons). The title screen should appear.</p>
+      <p><b>🤖 Android:</b> Download the file, then open it from your notifications or the Files app and choose <b>Open with Chrome</b>.</p>
+      <p><b>💻 Computer:</b> Double-click the file — it opens in your browser and just works.</p>
+    </div>
+    <p class="center muted">Sharing with the whole family? Easiest is putting the file at a web link so everyone just taps a URL — free static hosts like Netlify Drop do it in two minutes.</p>
+  </div>
+  <div id="bar"></div>
+</div>
+<script>
+/* ============ error reporter (visible, not silent) ============ */
+window.onerror = function(msg, src, line, col, err){
+  // Ignore noise from browser extensions and other cross-origin scripts:
+  // browsers sanitize those to "Script error." at line 0 with no real source.
+  // Only surface genuine errors coming from the game's own code.
+  if(!line || msg==='Script error.' || msg==='Script error' || /-extension:\/\//.test(src||'')){ return false; }
+  var e = document.getElementById('errbar');
+  if(e){ e.style.display='block'; e.textContent='⚠️ ' + msg + ' (line ' + line + ') — tell the editors.'; }
+};
+/* ============ safe storage ============ */
+var LS = {
+  ok:true, mem:{},
+  get:function(k,d){ try{ var v=localStorage.getItem(k); return v===null?d:JSON.parse(v);}catch(e){ this.ok=false; return (k in this.mem)?this.mem[k]:d; } },
+  set:function(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){ this.ok=false; this.mem[k]=v; } },
+  del:function(k){ try{ localStorage.removeItem(k); }catch(e){ delete this.mem[k]; } }
+};
+</script>
+<script>
+/*DATA-START*/
+var OCC = [
+  {id:'gov', icon:'🏛️', name:'The Governor', who:'after Gov. Robert Treat (1624–1710)', cash:1600, mult:1,
+   perk:'Starts wealthy. Towns know your name — ferries, pilots and doctors charge you half.'},
+  {id:'rev', icon:'📖', name:'The Preacher', who:'after Rev. Samuel Treat (1648–1717)', cash:1000, mult:2,
+   perk:'Keeps spirits up. The sick in your party recover noticeably faster.'},
+  {id:'arm', icon:'🔧', name:'The Armorer', who:'after Lt. Joshua Treat (1726–1802)', cash:700, mult:3,
+   perk:'Half-price powder & shot, fewer breakdowns, and you can haul 150 lbs back from a hunt.'},
+  {id:'nat', icon:'🌿', name:'The Naturalist', who:'after Mary Treat (1830–1923)', cash:850, mult:2.5,
+   perk:'Knows the cures Darwin praised. Medicine works twice as well and illness strikes your party less often.'}
+];
+var DEFAULT_PARTY = ['Joshua','Alice','Robert','Samuel','William'];
+var NAME_POOL = ['Richard','Alice','Robert','Samuel','Joseph','Joshua','Honoria','Mary','Charles','William','Nathaniel','Upham','Jonathan'];
+var DISEASES = ['dysentery','cholera','typhoid','camp fever','smallpox','measles'];
+var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+/* weather: [name, icon, speedFactor, sickRisk] */
+var WX = {
+  sea:    [['fair winds','🌤️',1.15,0],['steady breeze','⛅',1,0],['dead calm','🌫️',.25,.006],['squalls','🌧️',.8,.012],['gale','🌊',.55,.03],['fog','🌫️',.6,.006]],
+  mild:   [['clear','☀️',1,0],['warm','🌤️',1,0],['rain','🌧️',.7,.012],['thunderstorm','⛈️',.5,.018],['cool','⛅',1,0],['hot','🥵',.85,.012]],
+  maine:  [['clear & cold','🌤️',1,.006],['snow','🌨️',.55,.025],['deep snow','❄️',.35,.04],['freezing rain','🌧️',.5,.03],['bitter wind','🌬️',.7,.03],['brief thaw','⛅',1,0]],
+  modern: [['clear','☀️',1,0],['drizzle','🌦️',.95,0],['headwinds','🌬️',.85,0],['storm front','⛈️',.6,0]]
+};
+
+/* CHAPTERS. miles are game-miles from chapter start. */
+var CHAPTERS = [
+{ title:'The Crossing', sub:'Pitminster to the New World — 1637', mode:'sea', vehicle:'ship',
+  startY:1637, startM:3, startD:10, len:3000, rate:95, wx:'sea', sky:['#aebfd4','#56789e'], ground:'#39618c',
+  intro:'Spring, 1637. Richard Treat of Pitminster — baptized in the church of St. Andrew & St. Mary in 1584, son of Robert and Honoria Trott — has sold the farm. With his wife Alice Gaylord and their children, he walks to Bristol and books passage for New England. Three thousand miles of the North Atlantic lie ahead.',
+  landmarks:[
+   {at:0, name:'Port of Bristol', icon:'⚓', type:'start',
+    hist:'The family name was originally Trott. Richard married Alice Gaylord at the Pitminster church on April 27, 1615 — she had been baptized there herself in 1594. In 1637 they left it all behind.'},
+   {at:700, name:'Open Atlantic', icon:'🌊', type:'spot',
+    hist:'A week out, England below the horizon. Among the children aboard is young Robert Treat, baptized at Pitminster in 1624 — one day to be a colonial governor.'},
+   {at:1500, name:'Mid-Ocean', icon:'🌊', type:'spot',
+    hist:'Halfway. Ships like this one carried the Great Migration — some 20,000 souls to New England in a single decade. The Treats are now among them.'},
+   {at:2300, name:'The Grand Banks', icon:'🐟', type:'spot', fish:true,
+    hist:'Fog and fishing grounds off Newfoundland. Cod here run thick — a fortunate crew can refill the hold. Land is near.'},
+   {at:3000, name:'Boston Landfall', icon:'🏘️', type:'finale', shop:true, year:1637, month:8,
+    hist:'Land! The family comes ashore in Massachusetts Bay, then presses on to settle in Wethersfield, Connecticut — one of the colony’s oldest towns. The American story of the Treats begins.'}
+  ]},
+{ title:'Planting Connecticut', sub:'Wethersfield, Milford & Newark — 1637–1687', mode:'land', vehicle:'oxwagon',
+  startY:1637, startM:9, startD:2, len:400, rate:16, wx:'mild', sky:['#cfe3f5','#8fb7d8'], ground:'#6f8f4f',
+  intro:'From Boston the family drives an ox-cart west through the forest to the Connecticut River valley. A farm must be cleared, a town built, a colony planted. The work of three generations begins.',
+  landmarks:[
+   {at:0, name:'Boston', icon:'🏘️', type:'start',
+    hist:'Provisions are dear in a new colony, but the road west is open.'},
+   {at:95, name:'The Connecticut River', icon:'🛶', type:'river', depth:6, ferry:12,
+    hist:'The great river of the colony. On its far bank: Wethersfield, where Richard Treat will be a town leader, juror, and deputy for decades.'},
+   {at:110, name:'Wethersfield', icon:'🌾', type:'town', shop:true, year:1644,
+    hist:'Home. Richard Treat served on the committee collecting the Fenwick tax to support students at the college at Cambridge — Harvard (1644). In 1662, King Charles II named him an original patentee of the Royal Charter of Connecticut. He died here in 1669.'},
+   {at:180, name:'Milford', icon:'⛵', type:'town', shop:true, year:1639,
+    hist:'Robert Treat co-founded Milford in 1639. He would be buried here in 1710, after a life that shaped two colonies.'},
+   {at:290, name:'Newark Landing', icon:'🌳', type:'town', year:1666,
+    hist:'May 17, 1666 — Robert Treat leads Puritan settlers up the Passaic River and founds Newark, New Jersey. He wanted to call it Milford; Rev. Abraham Pierson’s "New Ark" won out. Early accounts call Robert "the founder of Newark."'},
+   {at:400, name:'Hartford — the Charter Oak', icon:'🌳', type:'finale', year:1687, month:9,
+    hist:'October 1687. Royal governor Edmund Andros marches into Hartford with troops to seize Connecticut’s charter. Governor Robert Treat rises to speak...'}
+  ]},
+{ title:'The Preacher’s Road', sub:'Milford to Eastham, Cape Cod — 1672', mode:'land', vehicle:'horsecart',
+  startY:1672, startM:3, startD:20, len:260, rate:17, wx:'mild', sky:['#d8e9f7','#9fc4e0'], ground:'#c8b87e',
+  intro:'The trail turns back a few years, to 1672. Rev. Samuel Treat, son of the Governor — Harvard-trained, thunder-voiced — takes the long sandy road to Eastham on Cape Cod, where he will preach for 45 years.',
+  landmarks:[
+   {at:0, name:'Milford', icon:'⛪', type:'start',
+    hist:'Samuel leaves his father’s town with little but books and conviction.'},
+   {at:105, name:'Providence', icon:'🏘️', type:'town', shop:true,
+    hist:'Roger Williams’ town — a haven for dissenters of every stripe. The taverns have opinions about Connecticut men.'},
+   {at:150, name:'Plymouth', icon:'🪨', type:'town', shop:true,
+    hist:'The old colony, settled 1620 — seventeen years before the Treats crossed. From here the Cape curls east into the sea.'},
+   {at:200, name:'The Great Dunes', icon:'🏜️', type:'spot',
+    hist:'Sand to the horizon. Carts bog, horses balk, and the wind never stops. Eastham folk call this road a sermon in itself.'},
+   {at:225, name:'Nauset Tidal Flats', icon:'🦀', type:'river', depth:3, ferry:0, tidal:true,
+    hist:'At low tide a cart can cross the flats — if it doesn’t dawdle. The sea returns on its own schedule.'},
+   {at:260, name:'Eastham', icon:'⛪', type:'finale', year:1672, month:5,
+    hist:'Rev. Samuel Treat ministered here until his death in 1717, famous for fire-and-brimstone sermons — and remembered for something gentler: he learned the language of the Nauset people and ministered among them for decades, in their own tongue.'}
+  ]},
+{ title:'The Maine Frontier', sub:'Cape Cod to the Penobscot — 1752–1842', mode:'land', vehicle:'oxwagon',
+  startY:1759, startM:8, startD:14, len:500, rate:15, wx:'maine', sky:['#dfe9ef','#9ab4c4'], ground:'#e8eef2',
+  intro:'Two generations pass at Eastham. Then Lt. Joshua Treat — gunsmith, armorer, interpreter of the Penobscot language — turns north toward the Maine frontier, where no permanent English settler has yet stayed on the Penobscot River. Winter is coming.',
+  landmarks:[
+   {at:0, name:'Eastham', icon:'⛪', type:'start',
+    hist:'The name Joshua enters the line in the 1720s — and never leaves it.'},
+   {at:160, name:'Falmouth (Portland)', icon:'🏘️', type:'town', shop:true,
+    hist:'Last big harbor before the frontier. Stock up: the woods ahead sell nothing.'},
+   {at:260, name:'Fort St. Georges', icon:'🏰', type:'town', year:1752,
+    hist:'Here in October 1752, Joshua Treat — trusted by both sides as an interpreter — witnessed the treaty with the Penobscot. His skill with their language made him a man worth knowing on this frontier.'},
+   {at:300, name:'The Penobscot Crossing', icon:'🧊', type:'river', depth:9, ferry:20, ice:true,
+    hist:'The great river of Maine — a highway in summer, a bridge of ice in deep winter, and a grave in between.'},
+   {at:330, name:'Fort Pownall', icon:'🏰', type:'town', shop:true, year:1759,
+    hist:'In 1759 Joshua accompanied Governor Thomas Pownall’s expedition and became armorer of the new Fort Pownall — the first permanent English settler on the Penobscot River. He served until the fort was dismantled in 1775, settling at what is now Stockton Springs.'},
+   {at:355, name:'Marsh Stream', icon:'🪵', type:'river', depth:4, ferry:0, year:1774,
+    hist:'In 1774 Joshua built the first sawmill and log dam on Marsh Stream — Frankfort’s first settlement. The British burned the mill in 1779; he rebuilt it four years later. "The Treat mills" ran here for a century.'},
+   {at:370, name:'Winterport', icon:'🏘️', type:'town', shop:true, year:1860,
+    hist:'Set off from Frankfort in 1860, Winterport is the heart of the old Treat homeland — birthplace of Judge William W. Treat. Frankfort’s town library still occupies the homestead of Robert Treat, a War of 1812 veteran. Charles H. Treat, future U.S. Treasurer, was born in Frankfort in 1842.'},
+   {at:410, name:'Orono', icon:'🏛️', type:'town', year:1830,
+    hist:'Nathaniel Treat (1798–1894) — lumberman, bank president, state legislator — built his brick home here in the 1830s. It stands today on the National Register of Historic Places. In 1820, Major Joseph Treat surveyed the Penobscot and St. John lands for Maine’s first governor, guided by John Neptune, lieutenant governor of the Penobscot Nation.'},
+   {at:500, name:'Eastport & Treat Island', icon:'🦞', type:'finale', year:1842, month:6,
+    hist:'In 1842, Upham Stowers Treat of Eastport became the first person in America to can lobster — the first one-pound can sold for 3 cents — helping launch the industry that made lobster Maine’s icon. He bought the island in Passamaquoddy Bay that still bears the name Treat Island; in 1863, Civil War soldiers built a battery there to guard America’s easternmost port. Today it is a nature preserve and eagle-nesting site.'}
+  ]},
+{ title:'The Long Road Home', sub:'Maine to Pitminster — 1905–2026', mode:'modern', vehicle:'motorcar',
+  startY:1905, startM:5, startD:1, len:4400, rate:300, wx:'modern', sky:['#cfe8f7','#8fd0f0'], ground:'#7c9c5e',
+  intro:'The family spreads with the century — into courtrooms, banks, party conventions and the Treasury itself. And in June 2026, the Treats do something no generation has done in 389 years: they go home to Pitminster. One last leg.',
+  landmarks:[
+   {at:0, name:'Winterport', icon:'🏘️', type:'start',
+    hist:'The motorcar replaces the ox-cart. The trail, at last, runs east.'},
+   {at:250, name:'Exeter, New Hampshire', icon:'⚖️', type:'town', shop:true, year:1958,
+    hist:'Judge William W. Treat (1918–2010), born in Winterport: NH Republican chairman (1954–58) — who in the 1956 primary led the write-in campaign that gave Vice President Nixon a surprise show of strength for renomination — Secretary of the U.S. Electoral College (1956–64), delegate to four national conventions, probate judge for 25 years and author of the three-volume Treat on Probate, founder of Bank Meridian, director of the Federal Reserve Bank of Boston, and member of a UN human-rights sub-commission in Geneva. His dinner table famously seated political opposites together — a legacy the Judge William W. Treat Fellowship at UNH (est. 2018) carries on.'},
+   {at:600, name:'Washington, D.C.', icon:'🏛️', type:'town', year:1905,
+    hist:'Charles H. Treat of Frankfort, Maine — who taught school to pay his own way to Dartmouth — served as 21st Treasurer of the United States (1905–1909) under Theodore Roosevelt and Taft. Roosevelt wrote to him admiringly about his gift for expressing things well, and thanked him on Election Day 1908. In 1917, Maj. Gen. Charles G. Treat led the American Military Mission to Italy. And in 1776, Robert Treat Paine of the descendant line signed the Declaration of Independence.'},
+   {at:1200, name:'Des Moines, Iowa', icon:'🌽', type:'town', year:2026,
+    hist:'The family tradition of public life carries on — Joseph B. Treat chaired the Wisconsin Republican Party back in 1898, and the present generation still works campaigns in the arena. The road now turns toward an airport, and an ocean the family last crossed going the other way.'},
+   {at:1500, name:'The Atlantic, Again', icon:'✈️', type:'spot', plane:true,
+    hist:'In 1637 this crossing took five months and cost lives. Tonight it takes seven hours and costs legroom. Somewhere below, the wake of a small wooden ship.'},
+   {at:4400, name:'Pitminster, Somerset', icon:'⛪', type:'finale', year:2026, month:5,
+    hist:'June 2026. The Church of St. Andrew & St. Mary, Pitminster — where Richard Trott was baptized in 1584, where he married Alice Gaylord in 1615. Inside hangs the brass tablet to Richard and Robert Treat, placed in 1902 by family genealogist John Harvey Treat. The family walks in together, 389 years after Richard walked out. Welcome home.'}
+  ]}
+];
+
+/* random events: ch = chapter indexes; w = weight; some have cond(s) */
+var EVENTS = [
+ {ch:[0], w:3, txt:'A gale tears at the rigging through the night.', fx:{food:-15, partsMaybe:1}},
+ {ch:[0], w:2, txt:'Dead calm. The sails hang like laundry; the master mutters about provisions.', fx:{days:2}},
+ {ch:[0], w:2, txt:'Rats have gotten into the stores.', fx:{food:-20}},
+ {ch:[0], w:2, txt:'A whale surfaces alongside and keeps company for an hour. The children are beside themselves.', fx:{morale:8}},
+ {ch:[0], w:2, txt:'Alice leads the families in psalms below deck. Even the sailors hush.', fx:{morale:10}},
+ {ch:[0], w:1, txt:'Fever spreads in the crowded ’tween decks.', fx:{sicken:'ship fever'}},
+ {ch:[0], w:1, txt:'A passenger spots land birds — the coast cannot be far!', fx:{morale:6}},
+ {ch:[0], w:1, txt:'Seawater has spoiled a clothing chest.', fx:{clothes:-1}},
+ {ch:[1,2], w:2, txt:'The Fenwick tax falls due — Richard’s committee collects for the scholars at Cambridge college (Harvard).', fx:{money:-15, morale:4}},
+ {ch:[1,2], w:2, txt:'Wolves circle the oxen in the night. You burn powder to drive them off.', fx:{ammo:-8}},
+ {ch:[1], w:1, txt:'Word arrives: King Charles II has named Richard Treat an original patentee of the Royal Charter of Connecticut!', fx:{morale:14}, once:'charter62'},
+ {ch:[1], w:1, txt:'Militia alarm — King Philip’s War. Robert Treat commands the Connecticut forces; the train-band musters for drill.', fx:{days:2, morale:5}, once:'kpw'},
+ {ch:[1,2], w:2, txt:'An axle cracks on a corduroy road.', fx:{parts:-1, daysIfNoParts:3}},
+ {ch:[1,2,3], w:2, txt:'You find wild blueberries — pails of them.', fx:{food:18, morale:4}},
+ {ch:[1,2,3], w:1, txt:'A stray dog adopts the party. Morale soars; the food lasts slightly less long.', fx:{morale:8, food:-5}},
+ {ch:[2], w:2, txt:'A nor’easter pins you in camp among the dunes.', fx:{days:2, food:-8}},
+ {ch:[2], w:2, txt:'Nauset neighbors share a stranded pilot whale. Samuel practices their language over supper.', fx:{food:60, morale:8}},
+ {ch:[2], w:1, txt:'Samuel preaches at a crossroads meetinghouse. The sermon is two hours of thunder; the collection plate is kind.', fx:{money:14, days:1, morale:5}},
+ {ch:[2], w:1, txt:'Cart bogs to the hubs in sand.', fx:{days:1}},
+ {ch:[3], w:3, txt:'Blizzard. The world goes white and you dig in.', fx:{days:2, food:-12, frostRisk:true}},
+ {ch:[3], w:2, txt:'A moose blocks the trail and declines to be reasoned with.', fx:{days:1}},
+ {ch:[3], w:2, txt:'John Neptune’s people show you a better path along the river.', fx:{miles:18, morale:6}},
+ {ch:[3], w:1, txt:'British raiders put the torch to the Treat mill at Marsh Bay — as they did in 1779. You salvage what you can; it WILL be rebuilt.', fx:{money:-25, morale:-8, parts:-1}, once:'mill79', after:355},
+ {ch:[3], w:2, txt:'Your lobster cans — three cents the pound — sell briskly to a Boston schooner.', fx:{money:22}, after:480},
+ {ch:[3], w:2, txt:'Deep cold. The firewood goes fast and the kettle never quite boils.', fx:{food:-10, frostRisk:true}},
+ {ch:[3], w:1, txt:'A timber sledge overturns on river ice; an ox goes down hard.', fx:{oxen:-1}},
+ {ch:[4], w:2, txt:'Flat tire on a gravel mile.', fx:{parts:-1, daysIfNoParts:1}},
+ {ch:[4], w:2, txt:'A framed letter surfaces in the luggage — Theodore Roosevelt to Treasurer Treat, 1908, praising his way with words.', fx:{morale:10}, once:'tr08'},
+ {ch:[4], w:2, txt:'Mary Treat’s letters from Darwin come up at dinner — fifteen of them, more than any woman naturalist of her era. She corrected his bladderwort theory; he credited her in print.', fx:{morale:8}, once:'darwin'},
+ {ch:[4], w:1, txt:'A cousin recalls the famous kin: two Bush presidents, Samuel Colt, Gideon Welles, Henry Ford II, Treat Williams. The car ride passes quickly.', fx:{morale:6}, once:'cousins'},
+ {ch:[4], w:1, txt:'Fog grounds the flight for a day. Airport sandwiches: $19.', fx:{days:1, money:-19}},
+ /* generic misfortunes */
+ {ch:[1,2,3], w:2, txt:'Bad water at the campsite.', fx:{sickenRandom:true}},
+ {ch:[1,2,3], w:1, txt:'A thief slips through camp in the dark.', fx:{stealth:true}},
+ {ch:[1,2,3], w:2, txt:'An ox wanders off in the night.', fx:{oxStray:true}},
+ {ch:[0,1,2,3], w:2, txt:'%N has taken a bad fall.', fx:{injure:true}},
+ {ch:[1,2,3,4], w:2, txt:'Heavy going. Nothing for it but patience.', fx:{}},
+ {ch:[0,1,2,3,4], w:3, txt:'A quiet day on the trail. The family tells stories of Pitminster.', fx:{morale:3}}
+];
+
+/* hunting tables per chapter: [emoji, name, lbs, speed, size] */
+var GAME_ANIMALS = {
+  0:[['🐟','cod',9,3.2,30],['🐟','cod',9,3.4,30],['🐠','haddock',6,4,26],['🦈','halibut',30,2.2,40],['🐋','(too big — leave it)',0,1.4,52]],
+  1:[['🐇','rabbit',3,4.5,26],['🦃','turkey',9,3.4,32],['🦌','deer',55,2.8,38],['🦆','duck',3,4.8,26],['🐻','black bear',110,1.9,44]],
+  2:[['🐇','rabbit',3,4.5,26],['🦆','duck',3,4.8,26],['🦃','turkey',9,3.4,32],['🦌','deer',55,2.8,38],['🐟','striper',8,3.6,28]],
+  3:[['🐇','snowshoe hare',3,4.6,26],['🦌','deer',55,2.8,38],['🫎','moose',320,1.7,52],['🐻','black bear',110,2,44],['🦆','eider',3,4.8,26]],
+  4:null /* no hunting in 2026 — there's a farmers' market */
+};
+/*DATA-END*/
+</script>
+<script>
+/*CORE-START*/
+var RNG = { f: Math.random };
+function rnd(){ return RNG.f(); }
+function ri(a,b){ return a + Math.floor(rnd()*(b-a+1)); }
+function pick(arr){ return arr[Math.floor(rnd()*arr.length)]; }
+function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+var MLEN = [31,28,31,30,31,30,31,31,30,31,30,31];
+
+function mkState(occId, names){
+  var occ = OCC.filter(function(o){return o.id===occId})[0] || OCC[0];
+  var ch = CHAPTERS[0];
+  return {
+    occ:occ.id, mult:occ.mult, money:occ.cash,
+    food:0, ammo:0, clothes:0, parts:0, meds:0, oxen:0,
+    party: names.slice(0,5).map(function(n){ return {name:n, hp:100, dis:null, disDays:0, alive:true}; }),
+    morale:70, pace:1, rations:2,
+    ch:0, mile:0, lmIndex:1, totalMiles:0,
+    date:{y:ch.startY, m:ch.startM, d:ch.startD},
+    wx:0, seen:{}, charterOak:false, lmVisited:1,
+    skipDays:0, q:[], log:[], over:false, won:false, days:0
+  };
+}
+function aliveMembers(S){ return S.party.filter(function(p){return p.alive}); }
+function chapter(S){ return CHAPTERS[S.ch]; }
+function nextLandmark(S){ return chapter(S).landmarks[S.lmIndex]; }
+function dateStr(S){ return MONTHS[S.date.m] + ' ' + S.date.d + ', ' + S.date.y; }
+function moneySym(S){ return S.date.y < 1776 ? '£' : '$'; }
+function advanceDate(S){
+  S.date.d++; S.days++;
+  var len = MLEN[S.date.m] + ((S.date.m===1 && S.date.y%4===0)?1:0);
+  if(S.date.d > len){ S.date.d = 1; S.date.m++; if(S.date.m>11){ S.date.m=0; S.date.y++; } }
+}
+function weatherToday(S){
+  var t = WX[chapter(S).wx];
+  if(chapter(S).wx==='maine'){
+    var winter = (S.date.m>=10 || S.date.m<=2);
+    var pool = winter ? [0,1,1,2,2,3,4,4,5] : [0,0,1,5,5,3,4,0];
+    S.wx = pool[Math.floor(rnd()*pool.length)];
+  } else S.wx = Math.floor(rnd()*t.length);
+  return t[S.wx];
+}
+function paceFactor(S){ return [0,1,1.25,1.5][S.pace]; }
+function paceWear(S){ return [0,1,2.2,3.6][S.pace]; }
+function rationLbs(S){ return [0,1,2,3][S.rations]; }
+function teamFactor(S){
+  var c = chapter(S);
+  if(c.mode!=='land') return 1;
+  if(S.oxen<=0) return 0.3; /* the family pulls the cart — slow but never stuck */
+  return Math.min(1, 0.4 + 0.15*S.oxen);
+}
+function healthSummary(S){
+  var a = aliveMembers(S); if(!a.length) return 'lost';
+  var avg = a.reduce(function(s,p){return s+p.hp},0)/a.length;
+  return avg>80?'hale':avg>60?'fair':avg>35?'poor':avg>15?'ailing':'dying';
+}
+/* one day. returns messages; pushes pending interrupts to S.q */
+function gameDay(S, resting){
+  var msgs = [];
+  if(S.over) return msgs;
+  advanceDate(S);
+  var w = weatherToday(S);
+  var c = chapter(S);
+  if(S.skipDays>0){ S.skipDays--; resting = 'delay'; }
+
+  /* food */
+  var alive = aliveMembers(S);
+  var need = alive.length * rationLbs(S);
+  var starving = false;
+  if(S.food >= need) S.food -= need;
+  else { S.food = 0; starving = true; }
+
+  /* travel */
+  var dist = 0;
+  if(!resting){
+    dist = Math.round(c.rate * w[2] * paceFactor(S) * teamFactor(S) * (0.85 + rnd()*0.3));
+    if(S.morale<30) dist = Math.round(dist*0.85);
+  }
+
+  /* landmark interrupt: clamp travel at landmark */
+  var lm = nextLandmark(S);
+  var newMile = S.mile + dist;
+  if(lm && newMile >= lm.at){ dist = lm.at - S.mile; newMile = lm.at; }
+  S.mile = newMile; S.totalMiles += dist;
+
+  /* health per member */
+  var cold = (c.wx==='maine' && (S.date.m>=10||S.date.m<=2));
+  var shortClothes = cold && S.clothes < alive.length;
+  alive.forEach(function(p){
+    var delta = 0;
+    if(resting==='rest') delta += 12;
+    else { delta += (S.rations===3?2:S.rations===1?-1:1) - paceWear(S); }
+    if(starving) delta -= 7;
+    if(shortClothes) delta -= 3;
+    if(p.dis){ delta -= ri(4,7); p.disDays -= (S.occ==='rev'?2:1);
+      if(p.disDays<=0){ msgs.push(p.name+' has recovered from '+p.dis+'.'); p.dis=null; } }
+    p.hp = clamp(p.hp + delta, 0, 100);
+    if(p.hp<=0){
+      if(S.charterOak){ S.charterOak=false; p.hp=35; p.dis=null;
+        msgs.push('🌳 The Charter Oak’s luck holds — '+p.name+' pulls through against all odds.');
+      } else {
+        p.alive=false;
+        msgs.push('🪦 '+p.name+' has died' + (p.dis? ' of '+p.dis : '') + '.');
+        S.morale = clamp(S.morale-25, 0, 100);
+        S.q.push({type:'death', name:p.name, cause:p.dis||'the hardships of the trail'});
+      }
+    }
+  });
+  if(starving) msgs.push('You are out of food. The family is starving.');
+  if(shortClothes) msgs.push('Not enough warm clothing — the cold is biting.');
+
+  /* sickness */
+  if(!S.over){
+    var risk = w[3] + (S.rations===1?0.02:S.rations===2?0.008:0) + (S.pace===3?0.012:0) + (S.morale<40?0.008:0) + (starving?0.035:0);
+    if(S.occ==='nat') risk *= 0.5;
+    aliveMembers(S).forEach(function(p){
+      if(!p.dis && rnd() < risk){
+        var d = (S.ch===0) ? pick(['ship fever','scurvy','dysentery']) : (cold && rnd()<0.4 ? 'frostbite' : pick(DISEASES));
+        p.dis = d; p.disDays = ri(5,11);
+        msgs.push('🤒 '+p.name+' has '+d+'.');
+      }
+    });
+  }
+
+  S.morale = clamp(S.morale + (resting==='rest'?3:0) + (S.rations===3?1:0) - (starving?4:0) - (S.pace===3?1:0) + (rnd()<0.3?1:0), 0, 100);
+
+  /* random event (not on landmark-arrival days) */
+  if(!resting && !(lm && S.mile===lm.at) && rnd()<0.30){
+    var ev = pickEvent(S);
+    if(ev){ S.q.push({type:'event', ev:ev}); }
+  }
+  /* pass graves of fallen previous parties */
+  var graves = (typeof getGraves==='function') ? getGraves() : [];
+  for(var gi=0; gi<graves.length; gi++){
+    var g = graves[gi];
+    if(g.ch===S.ch && g.mile > S.mile-dist && g.mile <= S.mile && !S.seen['grave'+gi]){
+      S.seen['grave'+gi]=true;
+      msgs.push('🪦 You pass a lonely grave: “Here lies '+g.name+(g.epitaph?(' — '+g.epitaph):'')+'”');
+    }
+  }
+
+  /* arrived at landmark? */
+  if(lm && S.mile === lm.at && aliveMembers(S).length){
+    S.lmVisited++;
+    if(lm.type==='river') S.q.push({type:'river', lm:lm});
+    else if(lm.type==='finale') S.q.push({type:'finale', lm:lm});
+    else S.q.push({type:'landmark', lm:lm});
+    if(lm.year && lm.year > S.date.y){ S.date.y = lm.year; if(lm.month!==undefined) S.date.m = lm.month; S.date.d = ri(1,27); }
+    else if(lm.year===S.date.y && lm.month!==undefined && lm.month>S.date.m){ S.date.m = lm.month; S.date.d = ri(1,27); }
+    S.lmIndex++;
+  }
+
+  if(!aliveMembers(S).length){ S.over=true; S.q.push({type:'gameover'}); }
+  return msgs;
+}
+function pickEvent(S){
+  var pool = [];
+  EVENTS.forEach(function(e){
+    if(e.ch.indexOf(S.ch)<0) return;
+    if(e.once && S.seen[e.once]) return;
+    if(e.after && S.mile < e.after) return;
+    for(var i=0;i<e.w;i++) pool.push(e);
+  });
+  if(!pool.length) return null;
+  var e = pick(pool);
+  if(e.once) S.seen[e.once]=true;
+  return e;
+}
+function applyEvent(S, ev){
+  var fx = ev.fx||{}, msgs=[];
+  var alive = aliveMembers(S);
+  var who = alive.length ? pick(alive) : {name:'Someone', alive:false};
+  var txt = ev.txt.replace('%N', who.name);
+  if(fx.food){ S.food = Math.max(0, S.food+fx.food); }
+  if(fx.money){ S.money = Math.max(0, S.money+fx.money); }
+  if(fx.ammo){ S.ammo = Math.max(0, S.ammo+fx.ammo); }
+  if(fx.clothes){ S.clothes = Math.max(0, S.clothes+fx.clothes); }
+  if(fx.parts){ if(S.parts+fx.parts<0 && fx.parts<0){ S.skipDays += 3; msgs.push('No spares — you lose 3 days improvising a repair.'); } S.parts = Math.max(0, S.parts+fx.parts); }
+  if(fx.partsMaybe){ if(S.parts>0){S.parts--; msgs.push('Your spare fittings go to the repairs.');} else S.skipDays += 1; }
+  if(fx.daysIfNoParts && S.parts<=0){ S.skipDays += fx.daysIfNoParts; }
+  if(fx.oxen){ S.oxen = Math.max(0, S.oxen+fx.oxen); }
+  if(fx.oxStray){ S.oxen = Math.max(0, S.oxen-1); if(rnd()<0.5){ S.oxen++; msgs.push('…found him at dawn, two fields over, unrepentant.'); } else msgs.push('He is not found.'); }
+  if(fx.days){ S.skipDays += fx.days; }
+  if(fx.miles){ S.mile += fx.miles; S.totalMiles += fx.miles; }
+  if(fx.morale){ S.morale = clamp(S.morale+fx.morale,0,100); }
+  if(fx.sicken && who.alive && !who.dis){ who.dis = fx.sicken; who.disDays = ri(6,13); msgs.push('🤒 '+who.name+' has '+fx.sicken+'.'); }
+  if(fx.sickenRandom && who.alive && !who.dis){ who.dis = pick(DISEASES); who.disDays = ri(6,13); msgs.push('🤒 '+who.name+' has '+who.dis+'.'); }
+  if(fx.injure && who.alive){ who.hp = clamp(who.hp-ri(15,30),1,100); }
+  if(fx.frostRisk && S.clothes < alive.length && who.alive && !who.dis){ who.dis='frostbite'; who.disDays=ri(4,9); msgs.push('🥶 '+who.name+' has frostbite.'); }
+  if(fx.stealth){
+    var r = pick(['food','ammo','money']);
+    if(r==='food'){ var n=Math.min(S.food, ri(10,30)); S.food-=n; msgs.push(n+' lbs of food are gone by morning.'); }
+    if(r==='ammo'){ var n2=Math.min(S.ammo, ri(10,30)); S.ammo-=n2; msgs.push(n2+' rounds of shot are gone by morning.'); }
+    if(r==='money'){ var n3=Math.min(S.money, ri(8,25)); S.money-=n3; msgs.push(moneySym(S)+n3+' is gone by morning.'); }
+  }
+  return {txt:txt, msgs:msgs};
+}
+/* river crossing resolution */
+function crossRiver(S, lm, choice){
+  var depth = lm.depth + (S.wx>=3 ? 2 : 0);
+  var out = {msgs:[], days:0};
+  if(choice==='ferry'){
+    var cost = (S.occ==='gov') ? Math.ceil(lm.ferry/2) : lm.ferry;
+    S.money = Math.max(0, S.money - cost); out.days=1;
+    out.msgs.push('The ferry takes you across for '+moneySym(S)+cost+'. Dry boots all around.');
+  } else if(choice==='wait'){
+    out.days = ri(2,4);
+    out.msgs.push(lm.tidal ? 'You wait for dead low tide and walk the flats like locals.' :
+                  lm.ice ? 'You wait '+out.days+' days for the ice to set hard, then cross it like a road.' :
+                  'You camp '+out.days+' days; the water drops.');
+  } else { /* ford */
+    var p = clamp(0.95 - depth*0.07, 0.25, 0.95);
+    var roll = rnd();
+    if(roll < p){ out.msgs.push('You ford the '+lm.name+' without trouble.'); }
+    else if(roll < p+0.3){
+      out.days = ri(1,2); var lost = Math.min(S.food, ri(8,25)); S.food -= lost;
+      out.msgs.push('The cart bogs midstream — '+lost+' lbs of provisions soaked, '+out.days+' day(s) drying out.');
+    } else {
+      var lostF = Math.min(S.food, ri(25,60)); S.food -= lostF;
+      var lostA = Math.min(S.ammo, ri(10,40)); S.ammo -= lostA;
+      out.msgs.push('⚠️ The current takes the cart! You lose '+lostF+' lbs of food and '+lostA+' rounds of shot.');
+      var v = pick(aliveMembers(S));
+      if(v && depth>5 && rnd()<0.35){ v.hp = clamp(v.hp - ri(25,45), 1, 100); out.msgs.push(v.name+' is pulled from the water half-drowned.'); }
+    }
+  }
+  S.skipDays += out.days;
+  return out;
+}
+/* chapter transition */
+function advanceChapter(S){
+  S.ch++;
+  var c = CHAPTERS[S.ch];
+  S.mile = 0; S.lmIndex = 1; S.lmVisited++; S.wx = 0;
+  S.date = {y:c.startY, m:c.startM, d:c.startD};
+  S.party.forEach(function(p){ if(p.alive){ p.hp = clamp(p.hp+20,0,100); p.dis=null; p.disDays=0; } });
+  S.morale = clamp(S.morale+15,0,100);
+  return c;
+}
+function finalScore(S){
+  var s = aliveMembers(S).length*400 + Math.round(S.food*0.1) + S.oxen*15 + S.parts*8 + S.meds*8
+        + S.clothes*4 + Math.round(S.money*0.5) + Math.round(S.ammo*0.05) + (S.charterOak?200:0) + S.lmVisited*20;
+  return Math.round(s * S.mult);
+}
+function scoreTitle(n){
+  return n>=2600?'Governor of the Trail':n>=1800?'Patriarch of Pitminster':n>=1100?'Penobscot Pioneer':n>=500?'Settler':'Greenhand';
+}
+/*CORE-END*/
+</script>
+<script>
+/* ================= UI LAYER ================= */
+var S = null, traveling = null, hunting = null;
+var $main = document.getElementById('main');
+var $bar = document.getElementById('bar');
+var $status = document.getElementById('status');
+
+function getGraves(){ return LS.get('tt_graves', []); }
+function addGrave(g){ var gs = getGraves(); gs.push(g); if(gs.length>40) gs.shift(); LS.set('tt_graves', gs); }
+function getScores(){ return LS.get('tt_scores', []); }
+function addScore(rec){ var sc = getScores(); sc.push(rec); sc.sort(function(a,b){return b.score-a.score}); LS.set('tt_scores', sc.slice(0,8)); }
+function saveGame(){ if(S && !S.over) LS.set('tt_save', S); }
+function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+function setMain(html){ $main.innerHTML = html; $main.scrollTop = 0; }
+function setBar(btns){
+  $bar.innerHTML = '';
+  btns.forEach(function(b){
+    var el = document.createElement('button');
+    el.innerHTML = b.label; if(b.cls) el.className = b.cls;
+    if(b.disabled) el.disabled = true;
+    el.onclick = function(){ if(!el.disabled) b.fn(); };
+    $bar.appendChild(el);
+  });
+}
+function crestSVG(size){
+  return '<div class="crestwrap"><svg class="titleart" width="'+size+'" viewBox="-10 -80 320 370" xmlns="http://www.w3.org/2000/svg"><use href="#crestArt"/></svg></div>';
+}
+function renderStatus(){
+  if(!S){ $status.style.display='none'; return; }
+  $status.style.display='block';
+  var w = WX[chapter(S).wx][S.wx] || WX[chapter(S).wx][0];
+  var lm = nextLandmark(S);
+  var dist = lm ? (lm.at - S.mile) : 0;
+  $status.innerHTML =
+    '<div class="row"><span>📅 <b>'+dateStr(S)+'</b></span><span>'+w[1]+' '+w[0]+'</span><span>'+moneySym(S)+'<b>'+S.money+'</b></span></div>'+
+    '<div class="row"><span>🥖 <b>'+S.food+'</b> lbs</span><span>❤️ '+healthSummary(S)+'</span><span>😊 '+(S.morale>=70?'high':S.morale>=45?'steady':S.morale>=25?'low':'grim')+'</span>'+
+    (lm?'<span>→ '+esc(lm.name)+': <b>'+dist+'</b> mi</span>':'')+'</div>';
+}
+
+/* ---------- TITLE ---------- */
+function showTitle(){
+  S = null; renderStatus();
+  var hasSave = !!LS.get('tt_save', null);
+  setMain(
+    crestSVG(150)+
+    '<h1>THE TREAT TRAIL</h1>'+
+    '<p class="center muted">389 years. One family. One trail.<br>Pitminster → Connecticut → Cape Cod → Maine → Pitminster.</p>'+
+    '<div class="hist"><span class="tag">THE PREMISE</span><br>In 1637, Richard Treat and Alice Gaylord of Pitminster, Somerset, sailed for New England with their children. This is the road the family has traveled ever since — playable, perilous, and true. Guide five Treats through four centuries and bring them home for the 2026 reunion.</div>'+
+    '<div class="crestwrap">'+artSVG('ship', 240)+'</div>'+
+    '<p class="center muted">Best on a phone. Works offline. Dysentery included at no extra charge.</p>'
+  );
+  var btns = [{label:'🛶 New Journey', cls:'primary', fn:showSetup}];
+  if(hasSave) btns.unshift({label:'▶ Continue', cls:'gold', fn:function(){ S = LS.get('tt_save', null); if(S){ renderStatus(); showTravel(); } }});
+  btns.push({label:'🏆 High Scores', fn:showScores});
+  btns.push({label:'❓ How to Play', fn:showHow});
+  setBar(btns);
+}
+function showHow(){
+  setMain(
+    '<h2>How to Play</h2>'+
+    '<div class="card"><p>You lead a party of five Treats along the family’s real migration route, in five chapters. Reach the Pitminster reunion with as many of them alive as you can.</p>'+
+    '<p><b>Travel</b> advances day by day — weather, health, and your pace decide the miles. <b>Food</b> is eaten daily; hunt or buy more. <b>Rest</b> heals. <b>Pace &amp; rations</b>: pushing hard and eating thin saves time and food but breaks bodies.</p>'+
+    '<p><b>Rivers</b> can be forded (free, risky), ferried (costly, safe), or waited out. <b>Landmarks</b> carry the family’s true history — and some sell supplies.</p>'+
+    '<p><b>Sickness</b> strikes the cold, the hungry, and the unlucky. Medicine helps. So does the Preacher.</p>'+
+    '<p>And at Hartford, in 1687, a certain charter will need hiding. Earn the <b>🌳 Charter Oak’s luck</b> and one member of your party will cheat death.</p></div>'+
+    '<p class="muted center">Every landmark note in this game is drawn from the family’s own records.</p>'
+  );
+  setBar([{label:'← Back', fn:showTitle}]);
+}
+/* ---------- SETUP ---------- */
+function showSetup(){
+  var html = '<h2>Who leads the family?</h2>';
+  OCC.forEach(function(o){
+    html += '<button class="choice" data-occ="'+o.id+'">'+o.icon+' <b>'+o.name+'</b> — '+o.who+
+      '<br><span class="muted">Starts with £'+o.cash+' · final score ×'+o.mult+'</span><br><span class="muted">'+o.perk+'</span></button>';
+  });
+  setMain(html);
+  setBar([{label:'← Title', fn:showTitle}]);
+  Array.prototype.forEach.call($main.querySelectorAll('[data-occ]'), function(b){
+    b.onclick = function(){ showNaming(b.getAttribute('data-occ')); };
+  });
+}
+function showNaming(occId){
+  var html = '<h2>Name your party of five</h2><p class="muted">The default five are real names from the direct line — fourteen generations, Pitminster to the present. Use your own family’s names if you like!</p>';
+  for(var i=0;i<5;i++){
+    html += '<input type="text" maxlength="14" id="nm'+i+'" value="'+DEFAULT_PARTY[i]+'" '+(i===0?'placeholder="Leader"':'')+'>';
+  }
+  html += '<p class="muted">P.S. — the name <i>Joshua</i> has been carried down the line since the 1720s.</p>';
+  setMain(html);
+  setBar([
+    {label:'🎲 Other family names', cls:'small', fn:function(){
+      var used=[]; for(var i=0;i<5;i++){ var n; do{ n=pick(NAME_POOL); }while(used.indexOf(n)>=0); used.push(n);
+        document.getElementById('nm'+i).value=n; } }},
+    {label:'Go to market →', cls:'primary', fn:function(){
+      var names=[]; for(var i=0;i<5;i++){ var v=document.getElementById('nm'+i).value.trim(); names.push(v||DEFAULT_PARTY[i]); }
+      S = mkState(occId, names); renderStatus();
+      showStore(true);
+    }}
+  ]);
+}
+/* ---------- STORE ---------- */
+function storeCatalog(start){
+  var c = S.ch, markup = start?1:[1,1.25,1.3,1.55,1.2][c];
+  var arm = (S.occ==='arm');
+  var items = [];
+  function it(key,label,unit,price,step,max){ items.push({key:key,label:label,unit:unit,price:Math.ceil(price*(key==='food'?1:markup)),step:step,max:max}); }
+  if(c<4) it('oxen', c===0?'🐂 Oxen (shipped in the hold)':'🐂 Oxen', 'head', 25, 1, 8);
+  it('food', c===4?'🛒 Groceries':'🥖 Provisions', '25 lbs', 5, 25, 2000);
+  if(c<4) it('ammo','🔫 Powder & shot', '20 rounds', arm?2:4, 20, 400);
+  it('clothes', c===3?'🧥 Warm woolens':'👕 Clothing', 'set', 12, 1, 12);
+  it('parts', c===0?'⚙️ Spare fittings & rigging': c===4?'🛞 Spare tires':'⚙️ Spare parts', 'each', 12, 1, 5);
+  it('meds', c===4?'💊 First-aid kit':'💊 Medicine', 'dose', 15, 1, 6);
+  return items;
+}
+function showStore(start, returnFn){
+  var items = storeCatalog(start);
+  var cart = {};
+  items.forEach(function(i){ cart[i.key]=0; });
+  var title = start ? 'Bristol Quay & Taunton Market' : 'Trading Post';
+  function total(){ var t=0; items.forEach(function(i){ t += Math.ceil(cart[i.key]/i.step)*i.price; }); return t; }
+  function render(){
+    var rows = items.map(function(i,ix){
+      return '<tr><td>'+i.label+'<br><span class="muted">'+moneySym(S)+i.price+' / '+i.unit+'</span></td>'+
+        '<td class="r"><button class="qbtn" data-m="'+ix+'">−</button> <b style="display:inline-block;min-width:44px;text-align:center">'+cart[i.key]+'</b> <button class="qbtn" data-p="'+ix+'">+</button></td></tr>';
+    }).join('');
+    setMain(
+      '<h2>'+title+'</h2>'+
+      (start?'<p class="muted">Old hands suggest: 4 oxen, 500 lbs of provisions, 100 rounds of shot, 5 sets of clothing, 2 spares, 2 medicines.</p>':'')+
+      '<table class="store">'+rows+'</table>'+
+      '<div class="card"><div class="scorebar"><span>Bill comes to</span><b>'+moneySym(S)+total()+'</b></div>'+
+      '<div class="scorebar"><span>You have</span><b>'+moneySym(S)+S.money+'</b></div></div>'+
+      ownedSummary()
+    );
+    Array.prototype.forEach.call($main.querySelectorAll('[data-p]'), function(b){
+      b.onclick=function(){ var i=items[+b.getAttribute('data-p')]; if(!i) return;
+        if(cart[i.key]+i.step<= i.max && total()+i.price<=S.money){ cart[i.key]+=i.step; render(); } };
+    });
+    Array.prototype.forEach.call($main.querySelectorAll('[data-m]'), function(b){
+      b.onclick=function(){ var i=items[+b.getAttribute('data-m')]; if(!i) return;
+        if(cart[i.key]>0){ cart[i.key]-=i.step; render(); } };
+    });
+  }
+  render();
+  setBar([
+    {label: start?'Weigh anchor ▶':'Done — back to the trail', cls:'primary', fn:function(){
+      S.money -= total();
+      items.forEach(function(i){ S[i.key] += cart[i.key]; });
+      renderStatus();
+      if(start) showChapterIntro();
+      else (returnFn||showTravel)();
+    }}
+  ]);
+}
+function ownedSummary(){
+  return '<p class="muted center">You own: '+S.oxen+' oxen · '+S.food+' lbs food · '+S.ammo+' shot · '+S.clothes+' clothes · '+S.parts+' spares · '+S.meds+' medicine</p>';
+}
+/* ---------- CHAPTER INTRO ---------- */
+function showChapterIntro(){
+  var c = chapter(S);
+  setMain(
+    '<p class="center muted">CHAPTER '+(S.ch+1)+' OF 5</p>'+
+    '<h1>'+c.title+'</h1>'+
+    '<p class="center"><b>'+c.sub+'</b></p>'+
+    '<div class="crestwrap">'+artSVG(c.vehicle, 215)+'</div>'+
+    '<div class="hist">'+c.intro+'</div>'
+  );
+  setBar([{label:'Onward ▶', cls:'primary', fn:showTravel}]);
+  saveGame();
+}
+/* ---------- TRAVEL ---------- */
+var ART_BOX = {ship:'0 0 152 112', oxwagon:'0 0 152 100', horsecart:'0 0 142 100', motorcar:'0 0 134 86', plane:'0 0 160 78'};
+function artSVG(k,w){ return '<svg width="'+w+'" viewBox="'+ART_BOX[k]+'" xmlns="http://www.w3.org/2000/svg"><use href="#'+k+'Art"/></svg>'; }
+function artFor(){ return (S.ch===4 && S.mile>=1500) ? 'plane' : chapter(S).vehicle; }
+function wxClass(name){
+  if(/snow|blizzard/i.test(name)) return 'snow';
+  if(/rain|squall|thunder|storm|gale|drizzle/i.test(name)) return 'rain';
+  if(/fog|calm/i.test(name)) return 'fog';
+  return '';
+}
+function sceneSVG(){
+  var c = chapter(S), w = WX[c.wx][S.wx] || WX[c.wx][0];
+  var art = artFor(), sea = (c.mode==='sea'), plane = (art==='plane');
+  var far = ['#46719c','#587a41','#b3a070','#c3ced6','#6b8a52'][S.ch];
+  /* scrolling ground props per chapter */
+  var unit = '';
+  if(S.ch===1) unit='<circle cx="30" cy="110" r="14" fill="#3f6d33"/><rect x="27" y="116" width="6" height="16" fill="#5a4226"/><circle cx="200" cy="114" r="10" fill="#4a7a3c"/><rect x="198" y="119" width="4" height="12" fill="#5a4226"/><circle cx="305" cy="108" r="16" fill="#3f6d33"/><rect x="302" y="116" width="6" height="18" fill="#5a4226"/>';
+  if(S.ch===2) unit='<path d="M40,126 q3,-12 6,0 M46,126 q3,-10 6,0 M52,126 q3,-12 6,0" stroke="#8a7a4a" fill="none" stroke-width="2"/><path d="M150,132 q3,-12 6,0 M156,132 q3,-10 6,0" stroke="#8a7a4a" fill="none" stroke-width="2"/><path d="M260,124 q3,-12 6,0 M266,124 q3,-10 6,0 M272,124 q3,-12 6,0" stroke="#8a7a4a" fill="none" stroke-width="2"/>';
+  if(S.ch===3) unit='<path d="M30,134 L40,104 L50,134 Z" fill="#2e4a38"/><path d="M35,116 L40,104 L45,116 Z" fill="#e8eef2"/><path d="M180,138 L192,102 L204,138 Z" fill="#2e4a38"/><path d="M186,118 L192,102 L198,118 Z" fill="#e8eef2"/><path d="M300,132 L309,106 L318,132 Z" fill="#2e4a38"/><path d="M304,118 L309,106 L314,118 Z" fill="#e8eef2"/>';
+  if(S.ch===4) unit='<rect x="60" y="96" width="4" height="34" fill="#6a5436"/><line x1="48" y1="103" x2="76" y2="103" stroke="#6a5436" stroke-width="3"/><rect x="220" y="96" width="4" height="34" fill="#6a5436"/><line x1="208" y1="103" x2="236" y2="103" stroke="#6a5436" stroke-width="3"/>';
+  var props = (!sea && !plane && unit) ? '<g class="scroll"><g>'+unit+'</g><g transform="translate(360,0)">'+unit+'</g></g>' : '';
+  var backwave = sea ? '<g class="waveB"><path d="M-120,122 Q-90,112 -60,122 T0,122 T60,122 T120,122 T180,122 T240,122 T300,122 T360,122 T420,122 T480,122 L480,176 L-120,176 Z" fill="#2e5078"/></g>' : '';
+  var frontwave = sea ? '<g class="waveA"><path d="M-120,140 Q-90,128 -60,140 T0,140 T60,140 T120,140 T180,140 T240,140 T300,140 T360,140 T420,140 T480,140 L480,176 L-120,176 Z" fill="'+c.ground+'"/></g>' : '';
+  var road = (S.ch===4 && !plane) ? '<rect x="0" y="126" width="360" height="22" fill="#8d8d85" stroke="none"/><line x1="0" y1="137" x2="360" y2="137" stroke="#f4e8cf" stroke-width="2" stroke-dasharray="14 12" class="roadline"/>' : '';
+  var planeClouds = plane ? '<g opacity=".9"><ellipse cx="60" cy="124" rx="42" ry="12" fill="#ffffff"/><ellipse cx="175" cy="136" rx="56" ry="14" fill="#f4f8fc"/><ellipse cx="300" cy="120" rx="46" ry="12" fill="#ffffff"/></g>' : '';
+  var vehicle;
+  if(sea) vehicle = '<g transform="translate(100,28) scale(0.92)"><g class="roller"><use href="#shipArt"/></g></g>';
+  else if(plane) vehicle = '<g transform="translate(95,32)"><g class="bobber"><use href="#planeArt"/></g></g>';
+  else vehicle = '<g transform="translate(102,80) scale(0.76)"><g class="bobber"><use href="#'+art+'Art"/></g></g>';
+  var rain=''; for(var i=0;i<16;i++){ var rx=(i*47)%360, ry=-170+((i*83)%340); rain+='<line x1="'+rx+'" y1="'+ry+'" x2="'+(rx-6)+'" y2="'+(ry+16)+'"/>'; }
+  var snow=''; for(var j=0;j<18;j++){ var sx=(j*59)%360, sy=-170+((j*97)%340); snow+='<circle cx="'+sx+'" cy="'+sy+'" r="2"/>'; }
+  return '<svg id="scenesvg" data-art="'+art+'" class="scenesvg '+wxClass(w[0])+(traveling?' go':'')+'" viewBox="0 0 360 170" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'+
+    '<defs><linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+c.sky[0]+'"/><stop offset="1" stop-color="'+c.sky[1]+'"/></linearGradient></defs>'+
+    '<rect width="360" height="170" fill="url(#skyGrad)"/>'+
+    '<circle cx="298" cy="32" r="13" fill="#fff7df" opacity=".9"/>'+
+    '<g class="cloudA" fill="#ffffff" opacity=".8"><ellipse cx="0" cy="30" rx="26" ry="9"/><ellipse cx="18" cy="25" rx="16" ry="7"/></g>'+
+    '<g class="cloudB" fill="#ffffff" opacity=".6"><ellipse cx="-40" cy="54" rx="30" ry="10"/><ellipse cx="-18" cy="48" rx="18" ry="7"/></g>'+
+    (sea ? '<rect y="100" width="360" height="70" fill="'+far+'" stroke="none"/>'
+         : plane ? ''
+         : '<path d="M0,100 Q45,80 90,98 T180,94 T270,100 T360,92 L360,170 L0,170 Z" fill="'+far+'" stroke="none"/>')+
+    (sea||plane ? '' : '<rect y="116" width="360" height="54" fill="'+c.ground+'" stroke="none"/>')+
+    road + backwave + props + planeClouds + vehicle + frontwave +
+    '<g id="lmg" class="lmg" style="transform:translate(380px,'+(sea?'66':'86')+'px)"><text id="lmicon" font-size="24" text-anchor="middle">'+(nextLandmark(S)?nextLandmark(S).icon:'')+'</text></g>'+
+    '<g class="rainfx" stroke="#dce9f5" stroke-width="1.6" opacity=".75"><g class="rainfall">'+rain+'</g></g>'+
+    '<g class="snowfx" fill="#ffffff" opacity=".9" stroke="none"><g class="snowfall">'+snow+'</g></g>'+
+    '<rect class="fogfx" width="360" height="170" fill="#e8e4da" opacity=".42" stroke="none"/>'+
+    '<text id="wxlabel" x="350" y="22" font-size="15" text-anchor="end">'+w[1]+'</text>'+
+  '</svg>';
+}
+function updateScene(){
+  var svg = document.getElementById('scenesvg');
+  if(!svg) return;
+  if(svg.getAttribute('data-art') !== artFor()){
+    var wrap = document.getElementById('scenewrap');
+    if(wrap){ wrap.innerHTML = sceneSVG(); }
+    return;
+  }
+  var c = chapter(S), w = WX[c.wx][S.wx] || WX[c.wx][0];
+  svg.setAttribute('class', 'scenesvg '+wxClass(w[0])+(traveling?' go':''));
+  var wl = document.getElementById('wxlabel'); if(wl) wl.textContent = w[1];
+  var lm = nextLandmark(S), g = document.getElementById('lmg');
+  if(lm && g){
+    var prev = c.landmarks[S.lmIndex-1];
+    var leg = (lm.at - (prev?prev.at:0)) || 1;
+    var dist = lm.at - S.mile;
+    var near = (dist < leg*0.3) ? (1 - dist/(leg*0.3)) : 0;
+    var x = near>0 ? (335 - near*105) : 380;
+    g.style.transform = 'translate('+x+'px,'+(c.mode==='sea'?66:86)+'px)';
+    var ic = document.getElementById('lmicon'); if(ic) ic.textContent = lm.icon;
+  }
+}
+function travelLog(){
+  return '<div class="log" id="log">'+S.log.slice(-14).map(function(m){return '<div>'+m+'</div>'}).join('')+'</div>';
+}
+function showTravel(){
+  stopTravel();
+  if(S.q.length){ processQueue(); return; }
+  var c = chapter(S);
+  var pct = Math.round(100*S.mile/c.len);
+  setMain(
+    '<p class="center muted" style="margin:0">CHAPTER '+(S.ch+1)+': '+c.title.toUpperCase()+' — '+c.sub+'</p>'+
+    '<div id="scenewrap">'+sceneSVG()+'</div>'+
+    '<div class="progress"><i style="width:'+pct+'%"></i></div>'+
+    travelLog()
+  );
+  renderStatus();
+  saveGame();
+  setBar([
+    {label:'▶ Travel', cls:'primary', fn:toggleTravel},
+    {label:'🏕 Rest', fn:function(){ doDay('rest'); }},
+    (S.ch===0 ? {label:'🎣 Fish', fn:showHunt} :
+     GAME_ANIMALS[S.ch] ? {label:'🎯 Hunt', fn:function(){ if(S.ammo<=0){ flashLog('No powder & shot — buy more at a town.'); } else showHunt(); }} :
+     {label:'🎯 Hunt', disabled:true, fn:function(){}}),
+    {label:'⚖️ Pace', cls:'small', fn:showPace},
+    {label:'👪 Party', cls:'small', fn:showStatus},
+    {label:'🗺 Map', cls:'small', fn:showMap}
+  ]);
+}
+function flashLog(msg){
+  S.log.push('<i>'+msg+'</i>');
+  var el = document.getElementById('log');
+  if(el){ el.innerHTML = S.log.slice(-14).map(function(m){return '<div>'+m+'</div>'}).join(''); el.scrollTop=el.scrollHeight; el.classList.add('flash'); }
+}
+function toggleTravel(){
+  if(traveling){ stopTravel(); showTravel(); return; }
+  traveling = setInterval(function(){ doDay(null); }, 650);
+  doDay(null);
+  var first = $bar.querySelector('button');
+  if(first) first.innerHTML = '⏸ Stop';
+  updateScene();
+}
+function stopTravel(){ if(traveling){ clearInterval(traveling); traveling=null; } }
+function doDay(mode){
+  var msgs = gameDay(S, mode);
+  msgs.forEach(function(m){ S.log.push(m); });
+  var el = document.getElementById('log');
+  if(el && msgs.length){ el.innerHTML = S.log.slice(-14).map(function(m){return '<div>'+m+'</div>'}).join(''); el.scrollTop = el.scrollHeight; }
+  renderStatus();
+  updateScene();
+  var c = chapter(S);
+  var prog = $main.querySelector('.progress i');
+  if(prog) prog.style.width = Math.round(100*S.mile/c.len)+'%';
+  if(S.q.length){ stopTravel(); processQueue(); }
+  else if(mode==='rest'){ saveGame(); }
+}
+/* ---------- QUEUE ---------- */
+function processQueue(){
+  if(!S.q.length){ showTravel(); return; }
+  var item = S.q.shift();
+  if(item.type==='event') showEvent(item.ev);
+  else if(item.type==='landmark') showLandmark(item.lm);
+  else if(item.type==='river') showRiver(item.lm);
+  else if(item.type==='finale') showFinale(item.lm);
+  else if(item.type==='death') showDeath(item);
+  else if(item.type==='gameover') showGameOver();
+  else processQueue();
+}
+function showEvent(ev){
+  var r = applyEvent(S, ev);
+  renderStatus();
+  setMain(
+    '<div class="bigicon">📜</div>'+
+    '<div class="card"><p><b>'+r.txt+'</b></p>'+ r.msgs.map(function(m){return '<p>'+m+'</p>'}).join('') +'</div>'
+  );
+  setBar([{label:'Press on ▶', cls:'primary', fn:processQueue}]);
+}
+function showDeath(item){
+  setMain(
+    '<div class="grave"><div class="rip">🪦</div><p><b>'+esc(item.name)+'</b></p><p class="tombnote">lost to '+esc(item.cause)+'<br>'+dateStr(S)+'</p></div>'+
+    '<p class="center">The family buries '+esc(item.name)+' beside the trail, marks the place with a cairn, and carries the name onward.</p>'
+  );
+  addGrave({ch:S.ch, mile:S.mile, name:item.name, epitaph:'taken by '+(item.cause||'the trail')+', '+S.date.y});
+  setBar([{label:'Press on', cls:'primary', fn:processQueue}]);
+}
+function doctorOffer(lm){
+  var sick = aliveMembers(S).filter(function(p){return p.dis || p.hp<50});
+  if(!sick.length || S.ch===0) return '';
+  var fee = S.occ==='gov'?10:20;
+  return '<button class="choice" id="docbtn">🩺 See the town doctor — '+moneySym(S)+fee+' (treats the worst-off member)</button>';
+}
+function wireDoctor(returnFn){
+  var b = document.getElementById('docbtn');
+  if(!b) return;
+  b.onclick = function(){
+    var fee = S.occ==='gov'?10:20;
+    if(S.money<fee){ b.disabled=true; b.textContent='Not enough money for the doctor.'; return; }
+    S.money-=fee;
+    var sick = aliveMembers(S).sort(function(a,b){return a.hp-b.hp})[0];
+    if(sick){ sick.dis=null; sick.disDays=0; sick.hp=clamp(sick.hp+25,0,100); }
+    renderStatus(); b.disabled=true; b.textContent='🩺 '+sick.name+' is patched up and dosed. “No charge for the lecture.”';
+  };
+}
+function showLandmark(lm){
+  renderStatus();
+  setMain(
+    '<div class="bigicon">'+lm.icon+'</div>'+
+    '<h2 class="center">'+esc(lm.name)+'</h2>'+
+    '<p class="center muted">'+dateStr(S)+' · '+S.mile+' miles into chapter '+(S.ch+1)+'</p>'+
+    '<div class="hist"><span class="tag">FAMILY HISTORY</span><br>'+lm.hist+'</div>'+
+    (lm.shop?'<p class="center muted">There is a trading post here.</p>':'')+
+    doctorOffer(lm)
+  );
+  var btns = [];
+  if(lm.shop) btns.push({label:'🛒 Trade', fn:function(){ showStore(false); }});
+  btns.push({label:'Press on ▶', cls:'primary', fn:processQueue});
+  setBar(btns);
+  wireDoctor();
+  saveGame();
+}
+function showRiver(lm){
+  var w = WX[chapter(S).wx][S.wx] || WX[chapter(S).wx][0];
+  var depthNote = lm.depth + (S.wx>=3?2:0);
+  setMain(
+    '<div class="bigicon">'+lm.icon+'</div>'+
+    '<h2 class="center">'+esc(lm.name)+'</h2>'+
+    '<div class="hist"><span class="tag">FAMILY HISTORY</span><br>'+lm.hist+'</div>'+
+    '<div class="card"><p>The crossing looks '+(depthNote>=8?'<b>dangerous</b>':depthNote>=5?'<b>dicey</b>':'manageable')+' today ('+w[0]+').</p></div>'
+  );
+  var btns = [{label:'🌊 Ford it (free, risky)', cls:'choice', fn:function(){ riverGo(lm,'ford'); }}];
+  if(lm.ferry) btns.push({label:'⛴ Ferry — '+moneySym(S)+((S.occ==='gov')?Math.ceil(lm.ferry/2):lm.ferry), cls:'choice', fn:function(){ riverGo(lm,'ferry'); }, disabled:S.money < ((S.occ==='gov')?Math.ceil(lm.ferry/2):lm.ferry)});
+  btns.push({label: lm.tidal?'🕐 Wait for low tide':lm.ice?'🧊 Wait for hard ice':'🕐 Wait for the water to drop', cls:'choice', fn:function(){ riverGo(lm,'wait'); }});
+  setBar(btns);
+}
+function riverGo(lm, choice){
+  var out = crossRiver(S, lm, choice);
+  renderStatus();
+  setMain('<div class="bigicon">'+lm.icon+'</div><div class="card">'+out.msgs.map(function(m){return '<p>'+m+'</p>'}).join('')+'</div>');
+  setBar([{label:'Press on ▶', cls:'primary', fn:processQueue}]);
+  saveGame();
+}
+/* ---------- FINALES ---------- */
+function showFinale(lm){
+  if(S.ch===1){ showCharterOak(lm); return; }
+  if(S.ch===4){ showVictory(lm); return; }
+  renderStatus();
+  setMain(
+    '<div class="bigicon">'+lm.icon+'</div>'+
+    '<h2 class="center">'+esc(lm.name)+'</h2>'+
+    '<div class="hist"><span class="tag">FAMILY HISTORY</span><br>'+lm.hist+'</div>'+
+    '<p class="center"><b>Chapter '+(S.ch+1)+' complete.</b> The trail passes to the next generation.</p>'+
+    (lm.shop?'<p class="center muted">You can outfit here before the road ahead.</p>':'')
+  );
+  var btns = [];
+  if(lm.shop) btns.push({label:'🛒 Outfit for the next leg', fn:function(){ showStore(false, function(){ chapterDone(); }); }});
+  btns.push({label:'Next chapter ▶', cls:'primary', fn:chapterDone});
+  setBar(btns);
+}
+function chapterDone(){
+  advanceChapter(S);
+  renderStatus();
+  showChapterIntro();
+}
+function showCharterOak(lm){
+  setMain(
+    '<div class="bigicon">🕯️</div>'+
+    '<h2 class="center">Hartford — October 1687</h2>'+
+    '<div class="hist">'+lm.hist+'</div>'+
+    '<div class="card"><p>Andros stands with his troops, hand out for the charter. Every eye turns to Governor Treat. The candles gutter…</p></div>'
+  );
+  setBar([
+    {label:'🗣 Rise, and give the longest speech of your life', cls:'choice primary', fn:function(){
+      S.charterOak = true; S.morale = clamp(S.morale+15,0,100);
+      setMain(
+        '<div class="bigicon">🌳</div>'+
+        '<div class="card"><p>You speak of plantations carved from wilderness, of charters dearly bought, of every man who died planting this colony. You speak until the candles burn to stubs — and then they go out.</p>'+
+        '<p>In the darkness, the charter vanishes from the table. By morning it sleeps inside the great hollow oak.</p>'+
+        '<p><b>🌳 You have earned the Charter Oak’s luck</b> — once, when death comes for a member of your party, it will not find them.</p></div>'
+      );
+      setBar([{label:'Next chapter ▶', cls:'primary', fn:chapterDone}]);
+    }},
+    {label:'🤐 Stay seated and hand it over', cls:'choice', fn:function(){
+      S.morale = clamp(S.morale-10,0,100);
+      setMain('<div class="card"><p>History will record that you… did not do that. (Robert Treat certainly didn’t.) Andros takes the charter; the colony takes it badly; supper is eaten in silence.</p><p class="muted">No Charter Oak luck for this party.</p></div>');
+      setBar([{label:'Next chapter ▶', cls:'primary', fn:chapterDone}]);
+    }}
+  ]);
+}
+function showVictory(lm){
+  S.over = true; S.won = true; LS.del('tt_save');
+  var sc = finalScore(S);
+  var alive = aliveMembers(S);
+  addScore({name:S.party[0].name, score:sc, title:scoreTitle(sc), occ:S.occ, survivors:alive.length, date:new Date().toLocaleDateString()});
+  setMain(
+    '<div class="bigicon">🔔⛪🔔</div>'+
+    '<h1>WELCOME HOME</h1>'+
+    '<div class="hist"><span class="tag">PITMINSTER · JUNE 2026</span><br>'+lm.hist+'</div>'+
+    '<div class="card"><p><b>'+alive.length+' of 5</b> of the family stand in the churchyard: '+alive.map(function(p){return p.name}).join(', ')+'.</p>'+
+    (alive.length<5?'<p class="muted">The names of the lost are spoken inside, beneath the brass tablet.</p>':'<p><b>A full family, four centuries, not a soul lost. The bells ring twice as long for you.</b></p>')+
+    '<div class="scorebar"><span>Survivors ×400</span><b>'+(alive.length*400)+'</b></div>'+
+    '<div class="scorebar"><span>Supplies & money</span><b>'+(finalScore(S)/S.mult - alive.length*400 - S.lmVisited*20 - (S.charterOak?200:0)).toFixed(0)+'</b></div>'+
+    '<div class="scorebar"><span>Landmarks ×20</span><b>'+(S.lmVisited*20)+'</b></div>'+
+    (S.charterOak?'<div class="scorebar"><span>🌳 Charter Oak, unspent</span><b>200</b></div>':'')+
+    '<div class="scorebar"><span>'+OCC.filter(function(o){return o.id===S.occ})[0].name+' ×'+S.mult+'</span><b>—</b></div>'+
+    '<div class="scorebar" style="font-size:18px"><span><b>FINAL SCORE</b></span><b>'+sc+'</b></div>'+
+    '<p class="center" style="font-size:18px"><b>'+scoreTitle(sc)+'</b></p></div>'
+  );
+  setBar([
+    {label:'🏆 High Scores', fn:showScores},
+    {label:'Play again', cls:'primary', fn:showTitle}
+  ]);
+}
+/* ---------- GAME OVER ---------- */
+function showGameOver(){
+  stopTravel(); LS.del('tt_save');
+  var leader = S.party[0].name;
+  setMain(
+    '<h2 class="center">Here ends the journey</h2>'+
+    '<p class="center">'+dateStr(S)+', '+S.mile+' miles into chapter '+(S.ch+1)+' — the '+esc(leader)+' party is lost.</p>'+
+    '<div class="grave"><div class="rip">🪦</div><p><b>THE '+esc(leader).toUpperCase()+' PARTY</b></p><p class="tombnote" id="epi">…</p></div>'+
+    '<p class="center muted">Write an epitaph. Future travelers on this trail will pass this grave.</p>'+
+    '<input type="text" id="epitaph" maxlength="60" placeholder="They jumped in the river anyway.">'
+  );
+  setBar([{label:'Lay them to rest', cls:'primary', fn:function(){
+    var e = document.getElementById('epitaph').value.trim() || 'They rest on the trail.';
+    addGrave({ch:S.ch, mile:Math.max(5,S.mile), name:'the '+leader+' party', epitaph:e});
+    showTitle();
+  }}]);
+  var inp = document.getElementById('epitaph');
+  inp.oninput = function(){ document.getElementById('epi').textContent = inp.value || '…'; };
+}
+/* ---------- PACE / RATIONS / TEND ---------- */
+function showPace(){
+  function btn(group, val, label, desc){
+    var on = S[group]===val;
+    return '<button class="choice" data-g="'+group+'" data-v="'+val+'" style="'+(on?'background:var(--gold);':'')+'">'+label+' <span class="muted">— '+desc+'</span></button>';
+  }
+  setMain(
+    '<h2>Pace</h2>'+
+    btn('pace',1,'🚶 Steady','a sane pace')+
+    btn('pace',2,'🏃 Brisk','+25% miles, wears the family down')+
+    btn('pace',3,'😤 Grueling','+50% miles, breaks bodies and tempers')+
+    '<h2>Rations</h2>'+
+    btn('rations',3,'🍗 Filling','3 lbs/person/day — keeps health up')+
+    btn('rations',2,'🍞 Meager','2 lbs — stretches the barrel')+
+    btn('rations',1,'🥣 Bare bones','1 lb — hungry and risky')+
+    (S.meds>0 && aliveMembers(S).some(function(p){return p.dis||p.hp<60}) ?
+      '<h2>The medicine chest</h2><button class="choice" id="tend">💊 Tend the sick — uses 1 of '+S.meds+' medicine'+(S.occ==='nat'?' <span class="muted">(Naturalist: double effect)</span>':'')+'</button>' : '')
+  );
+  setBar([{label:'← Back to the trail', cls:'primary', fn:showTravel}]);
+  Array.prototype.forEach.call($main.querySelectorAll('[data-g]'), function(b){
+    b.onclick=function(){ S[b.getAttribute('data-g')] = +b.getAttribute('data-v'); showPace(); };
+  });
+  var t = document.getElementById('tend');
+  if(t) t.onclick = function(){
+    S.meds--;
+    var sick = aliveMembers(S).sort(function(a,b){ return (a.dis?0:50)+a.hp - ((b.dis?0:50)+b.hp); })[0];
+    var nat = S.occ==='nat';
+    if(sick.dis){ sick.disDays = Math.max(0, sick.disDays-(nat?10:5)); if(sick.disDays===0) sick.dis=null; }
+    sick.hp = clamp(sick.hp+(nat?22:12),0,100);
+    flashLog('💊 You tend to '+sick.name+'.');
+    showPace();
+  };
+}
+/* ---------- STATUS ---------- */
+function showStatus(){
+  var rows = S.party.map(function(p){
+    var st = !p.alive ? '☠️ at rest' : p.dis ? '<span class="sick">'+p.dis+'</span>' : p.hp>80?'hale':p.hp>60?'fair':p.hp>35?'poor':p.hp>15?'ailing':'dying';
+    return '<div class="stat"><span>'+(p.alive?'🙂':'🪦')+' '+esc(p.name)+'</span><b>'+st+'</b></div>';
+  }).join('');
+  var inv = [['🐂 Oxen',S.oxen],['🥖 Food',S.food+' lbs'],['🔫 Shot',S.ammo],['👕 Clothing',S.clothes],['⚙️ Spares',S.parts],['💊 Medicine',S.meds],[moneySym(S)+' Money',S.money]];
+  setMain(
+    '<h2>The party</h2><div class="card party">'+rows+'</div>'+
+    '<h2>The wagon</h2><div class="card">'+inv.map(function(i){return '<div class="stat"><span>'+i[0]+'</span><b>'+i[1]+'</b></div>'}).join('')+
+    (S.charterOak?'<div class="stat"><span>🌳 Charter Oak’s luck</span><b>held</b></div>':'')+'</div>'+
+    '<p class="center muted">'+S.totalMiles+' miles since Bristol · day '+S.days+' · spirits '+S.morale+'/100</p>'
+  );
+  setBar([
+    {label:'💾 Save & quit to title', fn:function(){ saveGame(); showTitle(); }},
+    {label:'← Back to the trail', cls:'primary', fn:showTravel}
+  ]);
+}
+/* ---------- MAP ---------- */
+function showMap(){
+  var W=320, rowY=[24,57,90,123,156];
+  var svg = '';
+  function rowX(i, t){ return i%2===0 ? 18+284*t : 302-284*t; }
+  for(var i=0;i<5;i++){
+    var y=rowY[i], x0=rowX(i,0), x1=rowX(i,1);
+    svg += '<line x1="'+x0+'" y1="'+y+'" x2="'+x1+'" y2="'+y+'" stroke="'+(i<S.ch?'#a32638':i===S.ch?'#c9a227':'#b9a87e')+'" stroke-width="3" stroke-dasharray="'+(i>S.ch?'4 4':'none')+'"/>';
+    if(i<4){ var cx=rowX(i,1); svg += '<path d="M'+cx+','+y+' Q'+(i%2===0?cx+14:cx-14)+','+(y+16)+' '+rowX(i+1,0)+','+(rowY[i+1])+'" fill="none" stroke="#b9a87e" stroke-width="2" stroke-dasharray="3 3"/>'; }
+    CHAPTERS[i].landmarks.forEach(function(lm){
+      var t = lm.at/CHAPTERS[i].len, lx=rowX(i,t);
+      var visited = (i<S.ch) || (i===S.ch && lm.at<=S.mile);
+      svg += '<circle cx="'+lx+'" cy="'+y+'" r="4" fill="'+(visited?'#a32638':'#f4e8cf')+'" stroke="#241a12"/>';
+    });
+    svg += '<text x="'+(i%2===0?18:302)+'" y="'+(y-8)+'" font-size="9" font-family="Georgia" fill="#4a3a28" text-anchor="'+(i%2===0?'start':'end')+'">'+(i+1)+'. '+CHAPTERS[i].title+'</text>';
+  }
+  var px = rowX(S.ch, Math.min(1,S.mile/chapter(S).len)), py=rowY[S.ch];
+  svg += '<circle cx="'+px+'" cy="'+py+'" r="8" fill="none" stroke="#c9a227" stroke-width="3"/><circle cx="'+px+'" cy="'+py+'" r="3.5" fill="#a32638" stroke="#241a12"/>';
+  svg += '<text x="18" y="172" font-size="9" fill="#4a3a28" font-family="Georgia">⛪ Pitminster → ⛪ Pitminster, the long way (389 years)</text>';
+  setMain('<h2>The Family Trail</h2><div class="card" style="padding:6px"><svg viewBox="0 0 '+W+' 180" width="100%" xmlns="http://www.w3.org/2000/svg">'+svg+'</svg></div>'+
+    '<p class="muted center">Solid red: traveled · gold: this chapter · dotted: the road ahead</p>');
+  setBar([{label:'← Back to the trail', cls:'primary', fn:showTravel}]);
+}
+/* ---------- HUNT ---------- */
+function showHunt(){
+  stopTravel();
+  var sea = (S.ch===0);
+  var animals = GAME_ANIMALS[S.ch];
+  var kills=[], shots=0, tleft=20, spawnT=null, tickT=null, raf=null, live=[];
+  var cap = (S.occ==='arm')?150:100;
+  setMain(
+    '<p class="center muted" style="margin:2px">'+(sea?'Drop a line — tap the fish!':'Tap an animal to shoot. Each tap costs 1 round.')+'</p>'+
+    '<div class="huntbox'+(sea?' sea':'')+'" id="arena"></div>'+
+    '<div class="card" style="margin-top:8px"><div class="scorebar"><span id="htime">⏱ 20s</span><span id="hammo">'+(sea?'🎣':'🔫 '+S.ammo)+'</span><span id="hbag">🎒 0 lbs</span></div></div>'
+  );
+  setBar([{label:'Done — back to camp', cls:'primary', fn:finish}]);
+  var arena = document.getElementById('arena');
+  function spawn(){
+    if(live.length>=4) return;
+    var a = pick(animals);
+    if(!a[2] && rnd()<0.5) return;
+    var el = document.createElement('div');
+    el.className='animal'; el.textContent=a[0];
+    var dir = rnd()<0.5?1:-1;
+    var obj = {el:el, lbs:a[2], speed:(a[3]+rnd())*dir, x: dir>0?-40:arena.clientWidth+10, y: 12+rnd()*(arena.clientHeight-60), size:a[4], name:a[1]};
+    el.style.fontSize = a[4]+'px';
+    el.style.transform = dir>0?'scaleX(-1)':'';
+    arena.appendChild(el); live.push(obj);
+    el.addEventListener('pointerdown', function(ev){
+      ev.preventDefault(); ev.stopPropagation();
+      if(!sea){ if(S.ammo<=0) return; S.ammo--; }
+      shots++;
+      if(obj.lbs>0){
+        kills.push(obj);
+        pow(obj.x, obj.y, obj.lbs>100?'💥':'🎯');
+        el.remove(); live.splice(live.indexOf(obj),1);
+        updateHud();
+      }
+    });
+  }
+  function pow(x,y,icon){
+    var p=document.createElement('div'); p.className='pow'; p.textContent=icon;
+    p.style.left=x+'px'; p.style.top=y+'px'; arena.appendChild(p);
+    setTimeout(function(){p.remove()},400);
+  }
+  arena.addEventListener('pointerdown', function(){
+    if(!sea && S.ammo>0){ S.ammo--; shots++; updateHud(); }
+  });
+  function updateHud(){
+    var bag = kills.reduce(function(s,k){return s+k.lbs},0);
+    document.getElementById('hammo').textContent = sea?'🎣':'🔫 '+S.ammo;
+    document.getElementById('hbag').textContent = '🎒 '+bag+' lbs';
+  }
+  function step(){
+    live.slice().forEach(function(o){
+      o.x += o.speed*2.1;
+      if(o.x<-60 || o.x>arena.clientWidth+60){ o.el.remove(); live.splice(live.indexOf(o),1); return; }
+      o.el.style.left=o.x+'px'; o.el.style.top=o.y+'px';
+    });
+    raf = requestAnimationFrame(step);
+  }
+  spawnT = setInterval(spawn, 750);
+  tickT = setInterval(function(){
+    tleft--;
+    var te=document.getElementById('htime'); if(te) te.textContent='⏱ '+tleft+'s';
+    if(tleft<=0 || (!sea && S.ammo<=0)) finish();
+  }, 1000);
+  raf = requestAnimationFrame(step);
+  function finish(){
+    clearInterval(spawnT); clearInterval(tickT); cancelAnimationFrame(raf);
+    var total = kills.reduce(function(s,k){return s+k.lbs},0);
+    var carried = Math.min(total, cap);
+    S.food += carried;
+    var msgs = gameDay(S,'camp');
+    msgs.forEach(function(m){S.log.push(m)});
+    var names = {};
+    kills.forEach(function(k){ names[k.name]=(names[k.name]||0)+1; });
+    var bagList = Object.keys(names).map(function(n){return names[n]+' '+n}).join(', ') || 'nothing at all';
+    setMain(
+      '<div class="bigicon">'+(sea?'🎣':'🎯')+'</div>'+
+      '<div class="card"><p>You bag: <b>'+bagList+'</b> — '+total+' lbs.</p>'+
+      (total>carried?'<p>You can only carry <b>'+carried+' lbs</b> back to camp. The rest is left for the foxes.</p>':'')+
+      (!sea?'<p class="muted">'+shots+' rounds spent.</p>':'')+
+      '<p>The day is gone, but the larder is fuller: <b>'+S.food+' lbs</b>.</p></div>'
+    );
+    renderStatus();
+    setBar([{label:'Back to the trail ▶', cls:'primary', fn:function(){ if(S.q.length) processQueue(); else showTravel(); }}]);
+  }
+}
+/* ---------- SCORES ---------- */
+function showScores(){
+  var sc = getScores();
+  setMain('<h2>🏆 Family Record Book</h2>'+
+    (sc.length? '<div class="card">'+sc.map(function(r,i){
+      return '<div class="stat"><span>'+(i+1)+'. '+esc(r.name)+' <span class="muted">('+r.title+', '+r.survivors+'/5 home, '+r.date+')</span></span><b>'+r.score+'</b></div>';
+    }).join('')+'</div>' : '<p class="center muted">No completed journeys yet. The trail awaits.</p>')+
+    (LS.ok?'':'<p class="muted center">(Scores can’t be saved in this browser mode.)</p>')
+  );
+  setBar([{label:'← Title', fn:showTitle}]);
+}
+/* ---------- BOOT ---------- */
+showTitle();
+</script>
+</body>
+</html>

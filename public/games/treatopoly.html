@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>TREATOPOLY — Pitminster to the Present</title>
+<style>
+:root{
+  --parch:#f4ead8; --parch2:#ecdfc6; --ink:#2b2017; --gold:#b8862c; --gold2:#d9b23a;
+  --red:#a8322a; --red2:#8c2722; --cream:#faf4e6; --line:#9a805a;
+  --brown:#7b5b3a; --ltblue:#7fa8c4; --pink:#bd6584; --orange:#cf7a2e;
+  --gred:#b3322e; --yellow:#d4a92c; --green:#2f7d4f; --dkblue:#2c4e7e;
+  --ok:#2f7d4f; --bad:#a8322a;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0; background:radial-gradient(ellipse at 50% 30%, #f7efdd 0%, var(--parch) 55%, #e7d8bc 100%); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; touch-action:manipulation; overflow:hidden}
+h1,h2,h3,.serif{font-family:Georgia,"Times New Roman",serif}
+button{font-family:inherit; cursor:pointer; border:none; border-radius:10px; font-weight:700}
+button:disabled{opacity:.45; cursor:default}
+.screen{display:none; height:100dvh; width:100vw; flex-direction:column; align-items:center; overflow:hidden}
+.screen.on{display:flex}
+
+/* ===== MENU ===== */
+#mMenu{justify-content:center; gap:10px; padding:16px; overflow-y:auto}
+#mMenu .crestbox{width:min(38vw,150px)}
+.crestbox svg{width:100%; height:auto}
+#gmain{display:flex; flex-direction:column; flex:1; min-height:0; width:100%}
+#mTitle{font-size:clamp(30px,9vw,52px); letter-spacing:.06em; margin:2px 0 0; color:var(--red2); text-shadow:0 1px 0 #fff8}
+#mSub{margin:0 0 8px; font-style:italic; color:#6b5638; font-size:clamp(12px,3.4vw,15px); text-align:center}
+.mbtn{display:block; width:min(92vw,340px); padding:14px; font-size:17px; background:linear-gradient(#fffdf6,#f0e3c8); color:var(--ink);
+  border:2px solid var(--gold); box-shadow:0 2px 0 #00000022}
+.mbtn.primary{background:linear-gradient(#c84a40,#a8322a); color:#fff; border-color:#7c211b}
+.mbtn small{display:block; font-weight:400; font-size:12px; opacity:.75; margin-top:2px}
+.menulinks{display:flex; gap:18px; margin-top:6px}
+.menulinks a{color:#6b5638; font-size:13px; text-decoration:underline; cursor:pointer}
+#mFoot{font-size:11px; color:#8a755a; margin-top:10px; text-align:center; padding:0 14px}
+
+/* ===== LOBBY ===== */
+#mLobby{justify-content:flex-start; padding:18px; gap:10px; overflow-y:auto}
+#lobbyCard{width:min(94vw,440px); background:var(--cream); border:2px solid var(--gold); border-radius:14px; padding:16px; box-shadow:0 4px 14px #0002}
+#lobbyCode{font-family:Georgia,serif; font-size:40px; letter-spacing:.35em; text-align:center; color:var(--red2); margin:4px 0; user-select:all}
+.seat{display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px dashed var(--line)}
+.seat:last-child{border-bottom:none}
+.seat .tok{font-size:22px; width:30px; text-align:center}
+.seat .nm{flex:1; font-weight:600}
+.seat .tag{font-size:11px; padding:2px 8px; border-radius:99px; background:#e7d8bc; color:#6b5638}
+.seat button{background:#e7d8bc; padding:4px 10px; font-size:12px; border-radius:8px}
+.lobrow{display:flex; gap:8px; width:min(94vw,440px)}
+.lobrow .mbtn{flex:1; width:auto; padding:12px; font-size:15px}
+#lobbyHint{font-size:12.5px; color:#6b5638; text-align:center; max-width:min(94vw,440px); line-height:1.45}
+input.tin{width:100%; padding:12px; font-size:17px; border:2px solid var(--gold); border-radius:10px; background:#fffdf6; color:var(--ink); text-transform:none}
+input.code{ text-transform:uppercase; letter-spacing:.3em; font-family:Georgia,serif; font-size:24px; text-align:center}
+
+/* ===== GAME ===== */
+#mGame.on{display:flex}
+#topbar{width:100%; display:flex; align-items:center; gap:8px; padding:calc(6px + env(safe-area-inset-top)) 10px 6px; background:linear-gradient(#3e2c1c,#2e2014); color:#f0e3c8; min-height:42px}
+#topbar .t{font-family:Georgia,serif; font-weight:700; letter-spacing:.08em; font-size:15px; color:#ecd9a8}
+#roomBadge{font-size:11.5px; background:#00000033; border:1px solid #ecd9a855; padding:2px 8px; border-radius:99px; letter-spacing:.18em}
+#topbar .sp{flex:1}
+.tbtn{background:#5a4128; color:#f0e3c8; padding:6px 11px; font-size:13px; border-radius:8px}
+#pstrip{width:100%; display:flex; gap:6px; overflow-x:auto; padding:6px 8px; background:#e7d8bccc; scrollbar-width:none}
+#pstrip::-webkit-scrollbar{display:none}
+.pchip{flex:0 0 auto; display:flex; align-items:center; gap:6px; background:var(--cream); border:2px solid var(--line); border-radius:99px; padding:4px 11px 4px 7px; font-size:13px}
+.pchip.cur{border-color:var(--red); box-shadow:0 0 0 2px #a8322a44; background:#fff}
+.pchip.dead{opacity:.45; text-decoration:line-through}
+.pchip .ptok{font-size:17px}
+.pchip b{font-size:13px}
+.pchip .cash{color:var(--green); font-weight:700}
+.pchip .you{font-size:9.5px; background:var(--dkblue); color:#fff; border-radius:99px; padding:1px 5px}
+#boardwrap{flex:1; min-height:0; width:100%; display:flex; align-items:center; justify-content:center; padding:4px}
+#board{position:relative; aspect-ratio:1; height:100%; max-height:100%; max-width:100%; background:#cfe3d2;
+  border:3px solid #3e2c1c; border-radius:6px; display:grid; box-shadow:0 6px 22px #0003;
+  grid-template-columns:1.55fr repeat(9,1fr) 1.55fr; grid-template-rows:1.55fr repeat(9,1fr) 1.55fr}
+.cell{position:relative; background:var(--cream); border:1px solid #84775e; overflow:hidden}
+.cell .nm{position:absolute; left:1px; right:1px; text-align:center; font-weight:700; line-height:1.08;
+  font-size:clamp(4.6px,1.5vmin,9.6px); letter-spacing:0; word-break:break-word}
+.cell .pr{position:absolute; left:0; right:0; text-align:center; font-size:clamp(4.4px,1.35vmin,8.6px); color:#6b5638}
+.cell .ico{position:absolute; left:0; right:0; text-align:center; font-size:clamp(8px,2.6vmin,18px)}
+.cell.s-b .band{position:absolute; top:0; left:0; right:0; height:19%}
+.cell.s-l .band{position:absolute; right:0; top:0; bottom:0; width:19%}
+.cell.s-t .band{position:absolute; bottom:0; left:0; right:0; height:19%}
+.cell.s-r .band{position:absolute; left:0; top:0; bottom:0; width:19%}
+.cell.s-b .nm{top:21%} .cell.s-b .ico{top:44%} .cell.s-b .pr{bottom:3%}
+.cell.s-t .nm{top:4%} .cell.s-t .ico{top:30%} .cell.s-t .pr{bottom:23%}
+.cell.s-l .nm{top:8%; left:4%; right:22%} .cell.s-l .ico{top:42%; left:0; right:18%} .cell.s-l .pr{bottom:5%; left:0; right:20%}
+.cell.s-r .nm{top:8%; left:22%; right:4%} .cell.s-r .ico{top:42%; left:18%; right:0} .cell.s-r .pr{bottom:5%; left:20%; right:0}
+.cell.corner .nm{font-size:clamp(5.4px,1.7vmin,11px); top:6%}
+.cell.corner .ico{font-size:clamp(13px,4.6vmin,30px); top:34%}
+.cell.corner .sub{position:absolute; bottom:5%; left:2px; right:2px; text-align:center; font-size:clamp(4.4px,1.3vmin,8.4px); color:#6b5638}
+.cell.mort::after{content:"MORTGAGED"; position:absolute; inset:auto 0 28% 0; text-align:center; font-size:clamp(4px,1.2vmin,7.5px);
+  color:#fff; background:#a8322acc; transform:rotate(-8deg); padding:1px 0; font-weight:800; letter-spacing:.05em}
+.blds{position:absolute; display:flex; gap:4%; justify-content:center; align-items:center; pointer-events:none}
+.cell.s-b .blds{top:1.5%; left:0; right:0; height:16%}
+.cell.s-t .blds{bottom:1.5%; left:0; right:0; height:16%}
+.cell.s-l .blds{right:1.5%; top:0; bottom:0; width:16%; flex-direction:column}
+.cell.s-r .blds{left:1.5%; top:0; bottom:0; width:16%; flex-direction:column}
+.saw{width:14%; aspect-ratio:1; background:#2f7d4f; border:1px solid #1c4d30; border-radius:18%}
+.cell.s-l .saw,.cell.s-r .saw{width:auto; height:14%}
+.home{width:30%; aspect-ratio:1.25; background:#a8322a; border:1px solid #6d1d17; border-radius:18%}
+.cell.s-l .home,.cell.s-r .home{width:auto; height:24%}
+.own{position:absolute; width:13%; aspect-ratio:1; border-radius:50%; border:1.5px solid #fff; box-shadow:0 0 3px #0008; z-index:3}
+.cell.s-b .own{bottom:2%; right:2%} .cell.s-t .own{top:2%; right:2%} .cell.s-l .own{bottom:2%; left:2%} .cell.s-r .own{bottom:2%; right:2%}
+.toks{position:absolute; inset:0; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:center; gap:0; padding:6% 4% 7%; pointer-events:none; z-index:4}
+.toks span{font-size:clamp(9px,2.5vmin,17px); filter:drop-shadow(0 1px 1px #0007); transition:all .25s}
+.toks span.curtok{transform:scale(1.25)}
+#center{grid-row:2/11; grid-column:2/11; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:
+   radial-gradient(ellipse at center, #f7efdd 0%, #efe2c6 70%, #e3d0ab 100%); border:1px solid #84775e; gap:1.2vmin; padding:2%}
+#cTitle{font-family:Georgia,serif; font-weight:800; letter-spacing:.12em; color:var(--red2); font-size:clamp(13px,4.4vmin,34px); text-shadow:0 1px 0 #fff9}
+#cSub{font-size:clamp(7px,1.8vmin,12px); color:#6b5638; font-style:italic; margin-top:-1vmin; text-align:center}
+#crestC svg{width:clamp(44px,15vmin,120px); height:auto; filter:drop-shadow(0 2px 4px #0004)}
+#diceBox{display:flex; gap:1.6vmin; align-items:center; min-height:clamp(26px,7.4vmin,54px); cursor:pointer; padding:4px; border-radius:12px}
+#diceBox.ready .die{border-color:var(--gold); box-shadow:0 0 0 3px #b8862c66, 0 2px 6px #0004; animation:breathe 1.5s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.die{width:clamp(24px,6.8vmin,50px); aspect-ratio:1; background:#fffdf6; border:2px solid #3e2c1c; border-radius:18%;
+  display:flex; align-items:center; justify-content:center; font-size:clamp(16px,5vmin,36px); font-weight:800; color:#2b2017; box-shadow:0 2px 4px #0003}
+.die.rolling{animation:shake .42s infinite}
+@keyframes shake{0%{transform:rotate(0)}25%{transform:rotate(9deg) translateY(-2px)}50%{transform:rotate(-7deg)}75%{transform:rotate(5deg) translateY(2px)}100%{transform:rotate(0)}}
+#cStatus{font-size:clamp(9px,2.4vmin,15px); font-weight:600; text-align:center; color:var(--ink); max-width:96%; line-height:1.3; min-height:2.6em}
+#cLogMini{font-size:clamp(7.5px,1.9vmin,11.5px); color:#6b5638; text-align:center; max-width:94%; line-height:1.35; opacity:.9}
+#actionbar{width:100%; padding:8px 8px calc(8px + env(safe-area-inset-bottom)); background:linear-gradient(#efe2c6,#e3d0ab);
+  border-top:2px solid var(--gold); display:flex; gap:8px; justify-content:center; flex-wrap:wrap; min-height:60px; align-items:center}
+.abtn{padding:12px 18px; font-size:15.5px; border-radius:12px; background:linear-gradient(#fffdf6,#eee0c2); border:2px solid var(--gold); color:var(--ink); box-shadow:0 2px 0 #00000022}
+.abtn.go{background:linear-gradient(#c84a40,#a8322a); border-color:#7c211b; color:#fff}
+.abtn.buy{background:linear-gradient(#3a955f,#2f7d4f); border-color:#1c4d30; color:#fff}
+.abtn.small{padding:9px 13px; font-size:13.5px}
+
+/* ===== MODALS ===== */
+.modal{position:fixed; inset:0; background:#00000077; display:none; align-items:flex-end; justify-content:center; z-index:50}
+.modal.on{display:flex}
+.sheet{background:var(--cream); width:100%; max-width:520px; max-height:86dvh; overflow-y:auto; border-radius:18px 18px 0 0;
+  border:2px solid var(--gold); border-bottom:none; padding:16px 16px calc(18px + env(safe-area-inset-bottom)); box-shadow:0 -6px 30px #0005}
+.sheet h3{margin:0 0 4px; color:var(--red2); font-size:20px}
+.sheet .grip{width:44px; height:5px; border-radius:99px; background:#c9b488; margin:0 auto 10px}
+.shdr{display:flex; align-items:center; gap:10px; margin-bottom:6px}
+.shdr .gband{width:20px; height:34px; border-radius:4px; border:1px solid #00000033}
+.hist{font-size:13.5px; line-height:1.5; color:#4a3a26; font-style:italic; background:#f1e6cf; border-left:3px solid var(--gold); padding:8px 10px; border-radius:0 8px 8px 0; margin:8px 0}
+.rrow{display:flex; justify-content:space-between; font-size:13.5px; padding:3px 0; border-bottom:1px dashed #d8c7a4}
+.rrow b{color:var(--red2)}
+.sbtns{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+.sbtns .abtn{flex:1; min-width:120px; text-align:center}
+.cardbig{border:3px double var(--gold); border-radius:14px; background:#fffdf6; padding:18px 14px; text-align:center; margin:6px 0}
+.cardbig .ct{font-family:Georgia,serif; font-weight:800; letter-spacing:.1em; color:var(--red2); font-size:15px; margin-bottom:8px}
+.cardbig .cx{font-size:16px; line-height:1.45}
+.cardbig .cy{font-size:12px; color:#6b5638; font-style:italic; margin-top:8px}
+#logFull{font-size:13px; line-height:1.55; max-height:55dvh; overflow-y:auto; background:#f1e6cf; border-radius:10px; padding:10px}
+#logFull div{border-bottom:1px dashed #d8c7a4; padding:3px 0}
+.proprow{display:flex; align-items:center; gap:8px; padding:7px 4px; border-bottom:1px dashed #d8c7a4; font-size:14px}
+.proprow .sw{width:14px; height:22px; border-radius:3px; border:1px solid #00000033; flex:none}
+.proprow .pn{flex:1; font-weight:600}
+.proprow .meta{font-size:11.5px; color:#6b5638}
+.proprow button{background:#e7d8bc; border:1px solid var(--line); padding:5px 9px; font-size:12px; border-radius:7px}
+.okx{color:var(--ok)} .badx{color:var(--bad)}
+.toast{position:fixed; top:calc(10px + env(safe-area-inset-top)); left:50%; transform:translateX(-50%); background:#3e2c1c; color:#f0e3c8;
+  padding:10px 18px; border-radius:99px; font-size:14px; z-index:99; box-shadow:0 4px 14px #0006; display:none; max-width:92vw; text-align:center}
+@media(min-width:920px){
+  #mGame.on{flex-direction:column}
+  #gmain{gap:10px; padding:10px}
+  #boardwrap{flex:none; height:100%; padding:0}
+  #board{height:min(100%, calc(100vw - 370px), 780px)}
+  #sidecol{flex:1; min-width:300px; max-width:420px; display:flex; flex-direction:column; gap:8px; min-height:0}
+  #pstrip{flex-direction:column; overflow-y:auto; background:transparent; padding:0; max-height:34%}
+  .pchip{border-radius:12px}
+  #sideLog{flex:1; min-height:0; overflow-y:auto; background:#f1e6cfcc; border:1px solid var(--line); border-radius:12px; padding:10px; font-size:13px; line-height:1.5}
+  #sideLog div{border-bottom:1px dashed #d8c7a4; padding:2px 0}
+  #actionbar{border:1px solid var(--gold); border-radius:12px; background:#f1e6cfcc}
+  .modal{align-items:center}
+  .sheet{border-radius:18px; border-bottom:2px solid var(--gold)}
+}
+@media(max-width:919px){
+  /* phone layout: a strict grid so the action bar can never be pushed off-screen */
+  #mGame.on{display:grid; grid-template-columns:100%; grid-template-rows:auto auto minmax(0,1fr) auto; overflow-y:auto}
+  #gmain,#sidecol{display:contents}
+  #sideLog{display:none}
+  #topbar{grid-row:1}
+  #pstrip{grid-row:2}
+  #boardwrap{grid-row:3}
+  #actionbar{grid-row:4}
+  #board{height:min(100%, 100vw - 8px); width:auto}
+}
+@media(min-width:920px){
+  #gmain{flex-direction:row}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ MENU ============ -->
+<div id="mMenu" class="screen on">
+  <div class="crestbox" id="crestM"></div>
+  <h1 id="mTitle">TREATOPOLY</h1>
+  <p id="mSub">Four centuries of the Treat family · Pitminster 1584 → Pitminster 2026</p>
+  <button class="mbtn primary" onclick="UI.soloSetup()">🐻 Play vs. the Ancestors<small>Solo against bot ancestors on this device</small></button>
+  <button class="mbtn" onclick="UI.localSetup()">🎮 Pass &amp; Play<small>2–6 players sharing this screen</small></button>
+  <button class="mbtn" onclick="UI.hostSetup()">🌐 Host Online Game<small>Get a 5-letter code for friends &amp; family</small></button>
+  <button class="mbtn" onclick="UI.joinSetup()">🔑 Join with Code<small>Enter a code from your host</small></button>
+  <div class="menulinks"><a onclick="UI.showRules()">How to play</a><a onclick="UI.showStory()">The family story</a></div>
+  <div id="mFoot">A family game for the Treats — from the line of Richard Treat of Pitminster, Somerset (1584–1669).<br>Made with love, sawmills, and one well-hidden charter. · <b>v3</b></div>
+</div>
+
+<!-- ============ LOBBY ============ -->
+<div id="mLobby" class="screen"></div>
+
+<!-- ============ GAME ============ -->
+<div id="mGame" class="screen">
+  <div id="topbar">
+    <span class="t">TREATOPOLY</span><span style="font-size:10px;opacity:.6">v3</span><span id="roomBadge" style="display:none"></span>
+    <span class="sp"></span>
+    <button class="tbtn" onclick="UI.showLog()">📜 Log</button>
+    <button class="tbtn" onclick="UI.showManage()">☰ Estate</button>
+  </div>
+  <div id="gmain">
+    <div id="boardwrap"><div id="board"></div></div>
+    <div id="sidecol">
+      <div id="pstrip"></div>
+      <div id="sideLog"></div>
+      <div id="actionbar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* ================== TREATOPOLY — the Treat family, 1584–2026 ==================
+   Built from the family timeline, the reunion highlights sheet, and the
+   Ancestry GEDCOM (346 individuals): the documented 14-generation line from
+   Richard Trott of Pitminster to Joshua Atwood Treat (b. 1989).            */
+
+const GROUPS={
+ brown:{c:'#7b5b3a', label:'Somerset Roots', hc:50},
+ ltblue:{c:'#7fa8c4', label:'New England Landing', hc:50},
+ pink:{c:'#bd6584', label:"The Governor's Chapter", hc:100},
+ orange:{c:'#cf7a2e', label:'Cape Cod Pulpit', hc:100},
+ red:{c:'#b3322e', label:'Penobscot Pioneers', hc:150},
+ yellow:{c:'#d4a92c', label:'Maine Builders', hc:150},
+ green:{c:'#2f7d4f', label:'Public Servants', hc:200},
+ dkblue:{c:'#2c4e7e', label:'The Homecoming', hc:200}
+};
+
+const SP=[
+{t:'go', n:'SET SAIL', sub:'1637 · collect $200', ico:'⛵',
+ hist:'1637 — Richard, Alice, and the children leave Pitminster, Somerset for New England. Every lap of the board retraces the family circle: England → Connecticut → Cape Cod → Maine → the present.'},
+{t:'prop', n:'Trott Family Farm', g:'brown', p:60, r:[2,10,30,90,160,250], y:'c. 1530',
+ hist:'Richard Trott (c. 1530–1577) and his son Robert farmed at Pitminster, Somerset — generations one and two, back when the family name was still Trott.'},
+{t:'card', n:'Family Bible', ico:'📖', deck:'B',
+ hist:'Births, deaths, marriages, windfalls, and dues — all recorded in the family Bible (and, since 1893, in John Harvey Treat’s genealogy).'},
+{t:'prop', n:'Pitminster Church', g:'brown', p:60, r:[4,20,60,180,320,450], y:'1584',
+ hist:'The Church of St. Andrew & St. Mary: Richard baptized here in 1584, Alice Gaylord in 1594, married here in 1615. The brass tablet honoring them was placed in 1902 by John Harvey Treat himself.'},
+{t:'tax', n:'Fenwick Tax', amt:200, ico:'⚜️',
+ hist:'1644 — Richard Treat served on the committee collecting the Fenwick tax to support students at the college at Cambridge — Harvard. Pay $200; scholars are counting on you.'},
+{t:'journey', n:'The Atlantic Crossing', p:200, y:'1637', ico:'⛵',
+ hist:'The voyage that started it all — Somerset to Wethersfield, 1637.'},
+{t:'prop', n:'Wethersfield', g:'ltblue', p:100, r:[6,30,90,270,400,550], y:'1637',
+ hist:'The family’s first American soil. Richard Treat was a Wethersfield town leader, juror, and deputy to the General Court.'},
+{t:'card', n:'Charter Oak', ico:'🌳', deck:'C',
+ hist:'1687 — when Andros came for Connecticut’s charter, the candles went out and the charter vanished into the great oak. Fortune favors the bold.'},
+{t:'prop', n:'Richard Treat', g:'ltblue', p:100, r:[6,30,90,270,400,550], y:'1584–1669',
+ hist:'The emigrant patriarch — generation three. Town leader and one of the original patentees named in the 1662 Royal Charter of Connecticut by King Charles II.'},
+{t:'prop', n:'Milford Green', g:'ltblue', p:120, r:[8,40,100,300,450,600], y:'1639',
+ hist:'Robert Treat co-founded Milford, Connecticut in 1639, and was buried there in 1710. He later tried to name Newark after it — and lost the vote.'},
+{t:'stocks', n:'THE STOCKS', sub:'just visiting', ico:'🪵',
+ hist:'Every Puritan green had a set. Mind the curfew, pay your fines, and watch out for royal governors.'},
+{t:'prop', n:'Newark-on-Passaic', g:'pink', p:140, r:[10,50,150,450,625,750], y:'1666',
+ hist:'May 17, 1666 — Robert Treat led settlers up the Passaic and founded Newark, New Jersey. Early accounts call him “the founder of Newark”; the Robert Treat Hotel still bears the name.'},
+{t:'util', n:'The Treat Mills', p:150, ico:'🪚',
+ hist:'1774 — Lt. Joshua Treat built Frankfort’s first sawmill and log dam on Marsh Stream. The British burned it in 1779; he rebuilt, and “the Treat mills” ran for a century.'},
+{t:'prop', n:'Gov. Robert Treat', g:'pink', p:140, r:[10,50,150,450,625,750], y:'1624–1710',
+ hist:'Generation four. Governor of Connecticut 1683–98 — about 30 years in the colony’s top offices — militia commander in King Philip’s War, and the hero of the Charter Oak night.'},
+{t:'prop', n:'Hartford', g:'pink', p:160, r:[12,60,180,500,700,900], y:'1687',
+ hist:'Where Governor Treat stalled Sir Edmund Andros with a very long speech while the candles guttered — and the charter slipped away to the oak.'},
+{t:'journey', n:'The Passaic Voyage', p:200, y:'1666', ico:'🛶',
+ hist:'Up the Passaic River with the Milford Puritans to found Newark.'},
+{t:'prop', n:'Eastham Parsonage', g:'orange', p:180, r:[14,70,200,550,750,950], y:'1672',
+ hist:'Rev. Samuel Treat’s parish on Cape Cod from 1672 until his death in 1717 — the family’s Cape Cod century.'},
+{t:'card', n:'Family Bible', ico:'📖', deck:'B', hist:'Births, deaths, marriages, windfalls, and dues — recorded faithfully since Pitminster.'},
+{t:'prop', n:'Rev. Samuel Treat', g:'orange', p:180, r:[14,70,200,550,750,950], y:'1648–1717',
+ hist:'Generation five. Famous for thunderous fire-and-brimstone sermons — and remembered for something gentler: he learned the Nauset language and ministered among the Nauset people for decades.'},
+{t:'prop', n:'Joseph of Eastham', g:'orange', p:200, r:[16,80,220,600,800,1000], y:'1690–1756',
+ hist:'Generation six — the preacher’s son, the line’s bridge from Cape Cod to Boston, where the next Joshua was born in 1729.'},
+{t:'free', n:'THE LOBSTER BAKE', sub:'rest & eat', ico:'🔥',
+ hist:'A Maine family tradition since Upham canned the first lobster in 1842. Pull up a rock on Penobscot Bay, crack a claw, and rest a turn — no rent, no fines, no royal governors.'},
+{t:'prop', n:'Fort Pownall', g:'red', p:220, r:[18,90,250,700,875,1050], y:'1759',
+ hist:'Joshua Treat accompanied Gov. Pownall’s 1759 Penobscot expedition and became armorer of the new fort — the first permanent English settler on the Penobscot River.'},
+{t:'card', n:'Charter Oak', ico:'🌳', deck:'C', hist:'The candles go out. The charter vanishes. Draw.'},
+{t:'prop', n:'Lt. Joshua Treat', g:'red', p:220, r:[18,90,250,700,875,1050], y:'1726–1802',
+ hist:'Generation seven. Gunsmith, armorer, interpreter of the Penobscot language, witness to the 1752 treaty at Fort St. Georges — and founder of the Frankfort mills.'},
+{t:'prop', n:'Stockton Springs', g:'red', p:240, r:[20,100,300,750,925,1100], y:'1775',
+ hist:'When Fort Pownall was dismantled in 1775, Joshua settled beside it — the family toehold on Penobscot Bay, where generations of Treats were born.'},
+{t:'journey', n:'The Pownall Expedition', p:200, y:'1759', ico:'⚓'  ,
+ hist:'Governor Pownall’s 1759 expedition up the Penobscot, with Joshua Treat aboard as armorer and interpreter.'},
+{t:'prop', n:'Frankfort', g:'yellow', p:260, r:[22,110,330,800,975,1150], y:'1774',
+ hist:'Joshua’s settlement became the seedbed of the Maine Treats — Charles H. and Nathaniel Treat were born here, and the town library occupies a Treat homestead. The family’s 1850s map dates from the height of the mills era.'},
+{t:'prop', n:'Treat Island', g:'yellow', p:260, r:[22,110,330,800,975,1150], y:'1842',
+ hist:'Upham Stowers Treat’s island in Passamaquoddy Bay. A Civil War battery defended it in 1863; today it’s a preserve where bald eagles nest.'},
+{t:'util', n:'The Lobster Cannery', p:150, ico:'🦞',
+ hist:'1842 — Upham Stowers Treat of Eastport becomes the first person in America to can lobster. The first one-pound can sold for three cents.'},
+{t:'prop', n:'Orono Brick House', g:'yellow', p:280, r:[24,120,360,850,1025,1200], y:'1830s',
+ hist:'Nathaniel Treat (1798–1894) — lumberman, bank president, state legislator. His brick home in Orono is on the National Register of Historic Places.'},
+{t:'gotostocks', n:'ANDROS ARRIVES!', sub:'go to the Stocks', ico:'👑',
+ hist:'1687 — the royal governor marches on Hartford with troops to seize the charter. Quick — to the Stocks with you (someone has to take the fall while the charter gets to the oak).'},
+{t:'prop', n:'Treasurer Charles H.', g:'green', p:300, r:[26,130,390,900,1100,1275], y:'1842–1910',
+ hist:'Born in Frankfort; taught school to pay his way to Dartmouth (1863). Theodore Roosevelt made him 21st Treasurer of the United States (1905–09), and praised his “extremely happy knack of putting things.”'},
+{t:'prop', n:'Winterport', g:'green', p:300, r:[26,130,390,900,1100,1275], y:'1860',
+ hist:'Set off from Frankfort in 1860 — birthplace of Judge William W. Treat, and Joshua A. Treat II before him. The old Treat settlement kept producing Treats.'},
+{t:'card', n:'Family Bible', ico:'📖', deck:'B', hist:'The record keeps growing — fourteen generations and counting.'},
+{t:'prop', n:'Judge William W. Treat', g:'green', p:320, r:[28,150,450,1000,1200,1400], y:'1918–2010',
+ hist:'Generation twelve. NH GOP chairman, Secretary of the U.S. Electoral College, RNC member, probate judge for 25 years, author of Treat on Probate — and the man Nixon credited with the 1956 NH write-in that saved his spot on the ticket.'},
+{t:'journey', n:'The Penobscot Survey', p:200, y:'1820', ico:'🗺️',
+ hist:'Maine’s first governor sent Maj. Joseph Treat to survey the Penobscot and St. John rivers, guided by John Neptune, lieutenant governor of the Penobscot Nation.'},
+{t:'card', n:'Charter Oak', ico:'🌳', deck:'C', hist:'Defiance, fortune, and the occasional royal inconvenience.'},
+{t:'prop', n:'Bank Meridian', g:'dkblue', p:350, r:[35,175,500,1100,1300,1500], y:'est. by the Judge',
+ hist:'Founded and chaired by Judge William W. Treat, who also served as a director of the Federal Reserve Bank of Boston. Sold in 1985 — but in this game, it’s still in the family.'},
+{t:'tax', n:'Probate Fees', amt:100, ico:'⚖️',
+ hist:'Twenty-five years on the probate bench, three volumes of Treat on Probate — somebody has to pay the filing fees. $100, please.'},
+{t:'prop', n:'Return to Pitminster', g:'dkblue', p:400, r:[50,200,600,1400,1700,2000], y:'2026',
+ hist:'389 years after Richard sailed, the family returns to the Church of St. Andrew & St. Mary — to the font where he was baptized in 1584, the aisle where he married Alice in 1615, and the brass tablet John Harvey Treat set there in 1902. Full circle.'}
+];
+
+/* Charter Oak deck (fortune & movement) */
+const DECK_C=[
+{x:'1637 — the family sails for the New World. Advance to SET SAIL and collect $200.', k:'goto', i:0},
+{x:'2026 — 389 years later, the family sails home. Advance to RETURN TO PITMINSTER.', k:'goto', i:39},
+{x:'Gov. Pownall orders an expedition up the Penobscot. Advance to FORT POWNALL.', k:'goto', i:21},
+{x:'Lead the Milford Puritans up the river. Advance to NEWARK-ON-PASSAIC.', k:'goto', i:11},
+{x:'1958 — take your seat on the bench. Advance to JUDGE WILLIAM W. TREAT.', k:'goto', i:34},
+{x:'Set out on the nearest family Journey. If it’s owned, pay the owner double fare.', k:'nearj'},
+{x:'Inspect the works: advance to the nearest Mill. If it’s owned, roll the dice and pay 10× the throw.', k:'nearu'},
+{x:'The candles go out — the charter vanishes into the great oak. GET OUT OF THE STOCKS FREE. Keep this card.', k:'gojf'},
+{x:'“New Ark” beats “Milford” in the naming vote. Trudge back 3 spaces, muttering.', k:'back', v:3},
+{x:'Caught felling the King’s mast pines. GO DIRECTLY TO THE STOCKS — do not pass SET SAIL, do not collect $200.', k:'stocks'},
+{x:'1779 — the British burn the mill! Pay $25 per sawmill and $100 per homestead for repairs.', k:'repair', a:25, b:100},
+{x:'Toll on the Boston Post Road. Pay $15.', k:'money', v:-15},
+{x:'President Roosevelt praises your “extremely happy knack of putting things.” Collect $50.', k:'money', v:50},
+{x:'Bob Dole flies to Manchester to toast you: “We’ve both been chairman of that party.” Collect $100.', k:'money', v:100},
+{x:'You’re elected chairman of the family reunion committee. Pay each player $50 — venue, lobster, the works.', k:'each', v:-50},
+{x:'Bank Meridian declares a dividend. Collect $150.', k:'money', v:150}
+];
+
+/* Family Bible deck (the family ledger) */
+const DECK_B=[
+{x:'Pitminster pilgrimage — back to where it all began. Advance to SET SAIL and collect $200.', k:'goto', i:0},
+{x:'Inheritance from the Judge’s estate. Collect $200.', k:'money', v:200},
+{x:'Smallpox aboard the crossing — doctor’s fees. Pay $50.', k:'money', v:-50},
+{x:'Teach school to pay your own way to Dartmouth. Collect $50.', k:'money', v:50},
+{x:'John Harvey Treat, the family genealogist, vouches for your good name. GET OUT OF THE STOCKS FREE. Keep this card.', k:'gojf'},
+{x:'Out after curfew — Andros’s men find you. GO DIRECTLY TO THE STOCKS.', k:'stocks'},
+{x:'1842 — the first lobster can sells for 3¢, and the cannery booms. Collect $100.', k:'money', v:100},
+{x:'Darwin writes back — fifteen letters! — and credits your research. Collect $20.', k:'money', v:20},
+{x:'The 2026 Pitminster Reunion — every branch chips in for the venue. Collect $10 from each player.', k:'each', v:10},
+{x:'Treat on Probate royalties, all three volumes. Collect $100.', k:'money', v:100},
+{x:'Fort Pownall is dismantled — rebuild at Stockton Springs. Pay $100.', k:'money', v:-100},
+{x:'Rev. Samuel’s meetinghouse needs a new roof before winter. Pay $50.', k:'money', v:-50},
+{x:'Electoral College honorarium — eight years of faithful service. Collect $25.', k:'money', v:25},
+{x:'Spring freshet floods Marsh Stream! Pay $40 per sawmill and $115 per homestead.', k:'repair', a:40, b:115},
+{x:'Second prize, Waldo County Fair canning contest. Collect $10 (Upham would be proud).', k:'money', v:10},
+{x:'An eagle nests on Treat Island — the preserve wins a conservation grant. Collect $100.', k:'money', v:100},
+{x:'Society of the Cincinnati dues come round. Pay $25 (membership since 1783 — well, 2007).', k:'money', v:-25},
+{x:'Your 1850s map of Treatville is appraised as a genuine family artifact. Collect $45.', k:'money', v:45}
+];
+
+const TOKENS=['🐻','🦄','⛵','🌳','🦞','⚖️','🔨','🎩','📜','🪚'];
+const BOTS=[
+ {n:'Gov. Robert', tok:'🌳', blurb:'governed Connecticut for 15 years; will govern this board similarly'},
+ {n:'Rev. Samuel', tok:'📜', blurb:'fire, brimstone, and aggressive sawmill construction'},
+ {n:'Lt. Joshua', tok:'🔨', blurb:'settled the Penobscot; will settle anywhere you leave unguarded'},
+ {n:'Judge William', tok:'⚖️', blurb:'25 years on the bench; rules against your motion to underpay rent'},
+ {n:'Alice Gaylord', tok:'🏵️', blurb:'married into this in 1615 and has seen it all'},
+ {n:'Upham', tok:'🦞', blurb:'canned the first lobster; will can your finances'},
+ {n:'Mary the Naturalist', tok:'🌿', blurb:'out-observed Darwin; is currently observing your cash pile'},
+ {n:'Treasurer Charles', tok:'🎩', blurb:'ran the U.S. Treasury; treats the bank as a personal annex'}
+];
+const CODE_CHARS='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const SALARY=200, START_CASH=1500, BAIL=50, MAX_P=6;
+
+/* Crest SVG — Paly of gules and or, on a canton argent a bear rampant sable; unicorn's head crest */
+function crestSVG(w){
+ return `<svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg" ${w?`width="${w}"`:''}>
+ <defs><clipPath id="shieldclip"><path d="M30 60 h140 v90 q0 45 -70 70 q-70 -25 -70 -70 z"/></clipPath></defs>
+ <g>
+  <path d="M70 52 q30 -18 60 0 l-6 10 q-24 -12 -48 0 z" fill="#b8862c"/>
+  <path d="M88 30 l8 -22 6 4 -6 20 q14 -4 18 6 l-34 0 q2 -10 8 -8z" fill="#1a1410"/>
+  <circle cx="100" cy="14" r="2.6" fill="#1a1410"/>
+  <rect x="76" y="40" width="48" height="12" rx="5" fill="#d9b23a" stroke="#8a6418" stroke-width="2"/>
+  <circle cx="84" cy="46" r="2.4" fill="#a8322a"/><circle cx="100" cy="46" r="2.4" fill="#a8322a"/><circle cx="116" cy="46" r="2.4" fill="#a8322a"/>
+ </g>
+ <g clip-path="url(#shieldclip)">
+  <rect x="30" y="60" width="20" height="170" fill="#d9b23a"/><rect x="50" y="60" width="20" height="170" fill="#a8322a"/>
+  <rect x="70" y="60" width="20" height="170" fill="#d9b23a"/><rect x="90" y="60" width="20" height="170" fill="#a8322a"/>
+  <rect x="110" y="60" width="20" height="170" fill="#d9b23a"/><rect x="130" y="60" width="20" height="170" fill="#a8322a"/>
+  <rect x="150" y="60" width="20" height="170" fill="#d9b23a"/>
+  <rect x="30" y="60" width="56" height="52" fill="#e8e4da" stroke="#9a9588" stroke-width="1"/>
+  <path d="M48 104 l4 -10 q-4 -6 -1 -12 l5 -8 q-3 -5 2 -8 q4 -3 8 1 l3 4 q5 -1 7 3 l6 3 q4 2 1 6 q-4 3 -8 1 l-5 -2 -2 5 5 6 q3 5 0 9 l3 7 -6 2 -3 -8 q-4 2 -7 0 l-2 7 z" fill="#16100c"/>
+ </g>
+ <path d="M30 60 h140 v90 q0 45 -70 70 q-70 -25 -70 -70 z" fill="none" stroke="#3e2c1c" stroke-width="4"/>
+ <path d="M22 60 q-14 60 30 110 M178 60 q14 60 -30 110" stroke="#b8862c" stroke-width="6" fill="none" opacity=".85"/>
+ <path d="M16 70 q-10 50 24 95 M184 70 q10 50 -24 95" stroke="#a8322a" stroke-width="4" fill="none" opacity=".7"/>
+ <text x="100" y="246" text-anchor="middle" font-family="Georgia,serif" font-weight="bold" font-size="24" fill="#2b2017" letter-spacing="4">TREAT</text>
+</svg>`;
+}
+
+/* ================================ ENGINE ================================ */
+let G=null;            // game state (host/local authoritative; clients hold a mirror)
+let NET={mode:'local', peer:null, conns:[], mySeat:0, code:'', isHost:true};
+let botTimer=null;
+
+function rng(n){return Math.floor(Math.random()*n)}
+function shuffle(a){const x=a.slice(); for(let i=x.length-1;i>0;i--){const j=rng(i+1); [x[i],x[j]]=[x[j],x[i]]} return x}
+function fmt$(v){return '$'+v.toLocaleString()}
+
+function newGame(seats){
+ // seats: [{name, tok, kind:'human'|'bot', peerId|null}]
+ G={
+  gid:Math.random().toString(36).slice(2,8),
+  phase:'play', round:1, turn:0, rolled:false, doubles:0, dice:[1,1], await:'roll',
+  pending:null, // {type:'buy', i} etc
+  own:{}, mort:{}, bld:{},
+  deckC:shuffle(DECK_C.map((_,i)=>i)), ci:0,
+  deckB:shuffle(DECK_B.map((_,i)=>i)), bi:0,
+  log:[],
+  players:seats.map((s,i)=>({i, name:s.name, tok:s.tok, kind:s.kind, peerId:s.peerId||null,
+    cash:START_CASH, pos:0, stocks:0, gojf:0, out:false, col:PCOLS[i]}))
+ };
+ log(`⚓ ${G.players.length} players set sail from Pitminster. ${fmt$(START_CASH)} each — make Richard proud.`);
+ log(`${curP().tok} ${curP().name} rolls first.`);
+}
+const PCOLS=['#a8322a','#2c4e7e','#2f7d4f','#b8862c','#6d4b8a','#9a4f2e'];
+
+function curP(){return G.players[G.turn]}
+function alive(){return G.players.filter(p=>!p.out)}
+function log(s){G.log.push(s); if(G.log.length>120)G.log.shift()}
+
+function propsOf(pi){return Object.keys(G.own).filter(k=>G.own[k]===pi).map(Number)}
+function groupIdxs(g){return SP.map((s,i)=>s.g===g?i:-1).filter(i=>i>=0)}
+function ownsGroup(pi,g){return groupIdxs(g).every(i=>G.own[i]===pi)}
+function jCount(pi){return propsOf(pi).filter(i=>SP[i].t==='journey').length}
+function uCount(pi){return propsOf(pi).filter(i=>SP[i].t==='util').length}
+
+function rentOf(i,diceSum){
+ const s=SP[i], o=G.own[i];
+ if(o==null||G.mort[i])return 0;
+ if(s.t==='journey')return [0,25,50,100,200][jCount(o)];
+ if(s.t==='util')return (uCount(o)===2?10:4)*(diceSum||7);
+ const b=G.bld[i]||0;
+ if(b>0)return s.r[b];
+ return ownsGroup(o,s.g)? s.r[0]*2 : s.r[0];
+}
+function netWorth(p){
+ if(p.out)return 0;
+ let v=p.cash;
+ for(const i of propsOf(p.i)){
+  if(!G.mort[i])v+=SP[i].p/2;                       // sale value of unmortgaged deed
+  v+=(G.bld[i]||0)*(SP[i].g?GROUPS[SP[i].g].hc/2:0); // sale value of buildings
+ }
+ return v;
+}
+
+/* ---------- turn actions (host-authoritative) ---------- */
+function actRoll(){
+ if(G.await!=='roll')return;
+ const p=curP();
+ const d1=1+rng(6), d2=1+rng(6);
+ G.dice=[d1,d2]; G.rolled=true;
+ if(p.stocks>0){ // in the Stocks: doubles springs you
+  if(d1===d2){
+   p.stocks=0; log(`${p.tok} ${p.name} rolls double ${d1}s and springs free of the Stocks!`);
+   moveBy(d1+d2); return;
+  }
+  p.stocks--;
+  if(p.stocks===0){
+   pay(p,null,BAIL,`fine to leave the Stocks`);
+   if(p.out)return;
+   log(`${p.tok} ${p.name} pays the ${fmt$(BAIL)} fine and is released.`);
+   moveBy(d1+d2); return;
+  }
+  log(`${p.tok} ${p.name} rattles the Stocks (${d1}+${d2} — no doubles). ${p.stocks} turn(s) left.`);
+  G.await='end'; sync(); return;
+ }
+ if(d1===d2){G.doubles++}else{G.doubles=0}
+ if(G.doubles===3){
+  log(`${p.tok} ${p.name} rolls a third double — the constable is suspicious. To the Stocks!`);
+  G.doubles=0; toStocks(p); return;
+ }
+ moveBy(d1+d2);
+}
+function moveBy(n){
+ const p=curP();
+ const from=p.pos;
+ p.pos=(p.pos+n)%40;
+ if(p.pos<from){p.cash+=SALARY; log(`${p.tok} ${p.name} passes SET SAIL — collects ${fmt$(SALARY)}.`)}
+ log(`${p.tok} ${p.name} rolls ${G.dice[0]}+${G.dice[1]} → ${SP[p.pos].n}.`);
+ landOn();
+}
+function moveTo(i,collect=true){
+ const p=curP();
+ if(collect && i<p.pos){p.cash+=SALARY; log(`${p.tok} ${p.name} passes SET SAIL — collects ${fmt$(SALARY)}.`)}
+ p.pos=i; landOn();
+}
+function landOn(){
+ const p=curP(), i=p.pos, s=SP[i];
+ if(s.t==='prop'||s.t==='journey'||s.t==='util'){
+  const o=G.own[i];
+  if(o==null){
+   if(p.cash>=s.p){G.await='buy'; G.pending={i}; sync(); return}
+   log(`${p.tok} ${p.name} can’t afford ${s.n} (${fmt$(s.p)}).`);
+   G.await='end'; sync(); return;
+  }
+  if(o!==p.i && !G.mort[i]){
+   const rent=rentOf(i,G.dice[0]+G.dice[1]);
+   const owner=G.players[o];
+   pay(p,owner,rent,`rent at ${s.n}`);
+   if(p.out)return;
+   G.await='end'; sync(); return;
+  }
+  G.await='end'; sync(); return;
+ }
+ if(s.t==='tax'){pay(p,null,s.amt,s.n); if(p.out)return; G.await='end'; sync(); return}
+ if(s.t==='card'){drawCard(s.deck); return}
+ if(s.t==='gotostocks'){toStocks(p); return}
+ if(s.t==='go'||s.t==='free'||s.t==='stocks'){
+  if(s.t==='free')log(`${p.tok} ${p.name} pulls up a rock at the Lobster Bake. 🦞`);
+  G.await='end'; sync(); return;
+ }
+}
+function toStocks(p){
+ p.pos=10; p.stocks=3; G.doubles=0;
+ log(`🪵 ${p.tok} ${p.name} is clapped in the Stocks. Roll doubles, pay ${fmt$(BAIL)}, or use a Charter Oak card.`);
+ G.await='end'; sync();
+}
+function actBuy(){
+ if(G.await!=='buy')return;
+ const p=curP(), i=G.pending.i, s=SP[i];
+ if(p.cash<s.p)return;
+ p.cash-=s.p; G.own[i]=p.i;
+ log(`${p.tok} ${p.name} buys ${s.n} for ${fmt$(s.p)}.${(s.g&&ownsGroup(p.i,s.g))?` 🎉 The whole ${GROUPS[s.g].label} chapter is theirs!`:''}`);
+ G.pending=null; G.await='end'; sync();
+}
+function actPass(){
+ if(G.await!=='buy')return;
+ log(`${curP().tok} ${curP().name} passes on ${SP[G.pending.i].n}.`);
+ G.pending=null; G.await='end'; sync();
+}
+function actEnd(){
+ if(G.await!=='end')return;
+ const p=curP();
+ if(G.doubles>0 && !p.out && p.stocks===0){
+  log(`${p.tok} ${p.name} rolled doubles — rolls again!`);
+  G.await='roll'; sync(); return;
+ }
+ nextTurn();
+}
+function nextTurn(){
+ if(checkWin())return;
+ let n=G.turn;
+ do{n=(n+1)%G.players.length}while(G.players[n].out);
+ if(n<=G.turn){
+  G.round++;
+  if(G.round===85)log(`🕰 The family meeting grows long… at round 100 the elders will call it on net worth.`);
+  if(G.round>=100){callIt(true); return}
+ }
+ G.turn=n; G.doubles=0; G.await='roll'; G.pending=null;
+ const p=curP();
+ log(`— ${p.tok} ${p.name}'s turn (round ${G.round}) —`);
+ sync();
+}
+function actBail(){
+ const p=curP();
+ if(p.stocks===0||G.await!=='roll')return;
+ if(p.cash<BAIL)return;
+ p.cash-=BAIL; p.stocks=0;
+ log(`${p.tok} ${p.name} pays the ${fmt$(BAIL)} fine and steps out of the Stocks.`);
+ sync();
+}
+function actOak(){
+ const p=curP();
+ if(p.stocks===0||p.gojf<1||G.await!=='roll')return;
+ p.gojf--; p.stocks=0;
+ log(`🌳 ${p.tok} ${p.name} produces a Charter Oak card — charges mysteriously vanish.`);
+ sync();
+}
+
+/* ---------- cards ---------- */
+function drawCard(deck){
+ const p=curP();
+ let card, label;
+ if(deck==='C'){card=DECK_C[G.deckC[G.ci]]; G.ci=(G.ci+1)%G.deckC.length; label='CHARTER OAK'}
+ else{card=DECK_B[G.deckB[G.bi]]; G.bi=(G.bi+1)%G.deckB.length; label='FAMILY BIBLE'}
+ log(`${deck==='C'?'🌳':'📖'} ${p.tok} ${p.name} draws: “${card.x}”`);
+ G.lastCard={label, x:card.x, tok:p.tok, name:p.name};
+ applyCard(card);
+}
+function applyCard(c){
+ const p=curP();
+ switch(c.k){
+  case 'goto': moveTo(c.i,true); return;
+  case 'back': {p.pos=(p.pos+40-c.v)%40; log(`${p.tok} ${p.name} slides back to ${SP[p.pos].n}.`); landOn(); return}
+  case 'stocks': toStocks(p); return;
+  case 'gojf': p.gojf++; G.await='end'; sync(); return;
+  case 'money':
+   if(c.v>=0){p.cash+=c.v} else {pay(p,null,-c.v,'the ledger'); if(p.out)return}
+   G.await='end'; sync(); return;
+  case 'each':{
+   if(c.v>0){ for(const q of alive()){ if(q.i!==p.i){ pay(q,p,c.v,'the reunion fund') } } }
+   else { for(const q of alive()){ if(q.i!==p.i){ pay(p,q,-c.v,'reunion expenses'); if(p.out)return } } }
+   G.await='end'; sync(); return}
+  case 'repair':{
+   let saw=0, hom=0;
+   for(const i of propsOf(p.i)){const b=G.bld[i]||0; if(b===5)hom++; else saw+=b}
+   const cost=saw*c.a+hom*c.b;
+   if(cost>0){pay(p,null,cost,`repairs (${saw} sawmills, ${hom} homesteads)`); if(p.out)return}
+   else log(`${p.tok} ${p.name} has nothing to repair. Lucky.`);
+   G.await='end'; sync(); return}
+  case 'nearj':{
+   const js=[5,15,25,35]; const t=js.find(j=>j>p.pos) ?? js[0];
+   const o=G.own[t];
+   moveToCard(t);
+   if(o!=null&&o!==p.i&&!G.mort[t]){const r=rentOf(t,7)*2; pay(p,G.players[o],r,`double fare on ${SP[t].n}`); if(p.out)return}
+   G.await='end'; sync(); return}
+  case 'nearu':{
+   const us=[12,28]; const t=us.find(u=>u>p.pos) ?? us[0];
+   const o=G.own[t];
+   moveToCard(t);
+   if(o!=null&&o!==p.i&&!G.mort[t]){const d=2+rng(6)+rng(6); const r=10*d; pay(p,G.players[o],r,`10× a throw of ${d} at ${SP[t].n}`); if(p.out)return}
+   G.await='end'; sync(); return}
+ }
+}
+function moveToCard(i){
+ const p=curP();
+ if(i<p.pos){p.cash+=SALARY; log(`${p.tok} ${p.name} passes SET SAIL — collects ${fmt$(SALARY)}.`)}
+ p.pos=i; log(`${p.tok} ${p.name} travels to ${SP[i].n}.`);
+}
+
+/* ---------- money, debt, bankruptcy ---------- */
+function pay(from,to,amt,why){
+ if(amt<=0)return;
+ if(from.cash<amt)liquidate(from,amt);
+ if(from.cash>=amt){
+  from.cash-=amt;
+  if(to){to.cash+=amt; log(`💸 ${from.tok} ${from.name} pays ${fmt$(amt)} to ${to.tok} ${to.name} — ${why}.`)}
+  else log(`💸 ${from.tok} ${from.name} pays ${fmt$(amt)} — ${why}.`);
+ } else {
+  bankrupt(from,to,why);
+ }
+}
+function liquidate(p,need){
+ // auto-raise cash: sell buildings cheapest-first, then mortgage cheapest-first
+ let guard=0;
+ while(p.cash<need && guard++<200){
+  let sold=false;
+  const built=propsOf(p.i).filter(i=>(G.bld[i]||0)>0).sort((a,b)=>GROUPS[SP[a].g].hc-GROUPS[SP[b].g].hc);
+  if(built.length){
+   const i=built[0]; const hc=GROUPS[SP[i].g].hc; const wasHome=G.bld[i]===5;
+   G.bld[i]--; p.cash+=hc/2;
+   log(`🏚 ${p.name} sells ${wasHome?'the homestead':'a sawmill'} on ${SP[i].n} (+${fmt$(hc/2)}).`);
+   sold=true;
+  } else {
+   const un=propsOf(p.i).filter(i=>!G.mort[i] && (G.bld[i]||0)===0).sort((a,b)=>SP[a].p-SP[b].p);
+   if(un.length){const i=un[0]; G.mort[i]=true; p.cash+=SP[i].p/2; log(`🏦 ${p.name} mortgages ${SP[i].n} (+${fmt$(SP[i].p/2)}).`); sold=true}
+  }
+  if(!sold)break;
+ }
+}
+function bankrupt(p,to,why){
+ p.out=true;
+ const stuff=propsOf(p.i);
+ if(to){
+  for(const i of stuff){G.own[i]=to.i; G.bld[i]=0}
+  to.cash+=p.cash;
+  log(`☠️ ${p.tok} ${p.name} goes bankrupt over ${why}! Everything passes to ${to.tok} ${to.name}.`);
+ } else {
+  for(const i of stuff){delete G.own[i]; delete G.mort[i]; G.bld[i]=0}
+  log(`☠️ ${p.tok} ${p.name} goes bankrupt over ${why}! Holdings return to the bank.`);
+ }
+ p.cash=0;
+ if(curP().i===p.i){nextTurn(); return}
+ checkWin(); sync();
+}
+function checkWin(){
+ const a=alive();
+ if(a.length===1){
+  G.phase='over'; G.await='over'; G.winner=a[0].i;
+  log(`👑 ${a[0].tok} ${a[0].name} stands alone — heir to the whole Treat legacy!`);
+  sync(); return true;
+ }
+ return false;
+}
+function callIt(auto){
+ // end the game by net worth (host's bell, or the elders at round 100)
+ const ranked=alive().map(p=>({p, v:netWorth(p)})).sort((a,b)=>b.v-a.v);
+ G.phase='over'; G.await='over'; G.winner=ranked[0].p.i; G.calledIt=ranked.map(r=>({name:r.p.name,tok:r.p.tok,v:r.v}));
+ log(auto?`🕰 Round 100 — the elders call the meeting to order. ${ranked[0].p.tok} ${ranked[0].p.name} wins on net worth (${fmt$(ranked[0].v)}).`
+        :`🔔 The game is called by the head of the family! ${ranked[0].p.tok} ${ranked[0].p.name} wins on net worth (${fmt$(ranked[0].v)}).`);
+ sync();
+}
+
+/* ---------- estate management ---------- */
+function canBuildOn(pi,i){
+ const s=SP[i];
+ if(s.t!=='prop'||G.own[i]!==pi||!ownsGroup(pi,s.g)||G.mort[i])return false;
+ const b=G.bld[i]||0;
+ if(b>=5)return false;
+ // even-building rule within group; no building if any in group mortgaged
+ const gi=groupIdxs(s.g);
+ if(gi.some(j=>G.mort[j]))return false;
+ const min=Math.min(...gi.map(j=>G.bld[j]||0));
+ return b===min;
+}
+function actBuild(i){
+ const p=curP(); // building allowed on your turn (await buy/end)
+ if(G.await!=='end'&&G.await!=='roll'&&G.await!=='buy')return;
+ if(!canBuildOn(p.i,i))return;
+ const hc=GROUPS[SP[i].g].hc;
+ if(p.cash<hc)return;
+ p.cash-=hc; G.bld[i]=(G.bld[i]||0)+1;
+ log(G.bld[i]===5?`🏛 ${p.tok} ${p.name} raises a HOMESTEAD on ${SP[i].n}!`:`🪚 ${p.tok} ${p.name} builds a sawmill on ${SP[i].n} (${G.bld[i]}/4).`);
+ sync();
+}
+function actSell(i){
+ const p=curP();
+ if(G.own[i]!==p.i)return;
+ const b=G.bld[i]||0; if(b===0)return;
+ const hc=GROUPS[SP[i].g].hc;
+ // even selling
+ const gi=groupIdxs(SP[i].g); const max=Math.max(...gi.map(j=>G.bld[j]||0));
+ if(b!==max)return;
+ G.bld[i]--; p.cash+=hc/2;
+ log(`🏚 ${p.tok} ${p.name} sells ${b===5?'the homestead':'a sawmill'} on ${SP[i].n} (+${fmt$(hc/2)}).`);
+ sync();
+}
+function actMort(i){
+ const p=curP();
+ if(G.own[i]!==p.i||G.mort[i]||(G.bld[i]||0)>0)return;
+ const gi=SP[i].g?groupIdxs(SP[i].g):[];
+ if(gi.some(j=>(G.bld[j]||0)>0))return;
+ G.mort[i]=true; p.cash+=SP[i].p/2;
+ log(`🏦 ${p.tok} ${p.name} mortgages ${SP[i].n} for ${fmt$(SP[i].p/2)}.`);
+ sync();
+}
+function actUnmort(i){
+ const p=curP();
+ if(G.own[i]!==p.i||!G.mort[i])return;
+ const cost=Math.ceil(SP[i].p/2*1.1);
+ if(p.cash<cost)return;
+ p.cash-=cost; delete G.mort[i];
+ log(`🏦 ${p.tok} ${p.name} lifts the mortgage on ${SP[i].n} (${fmt$(cost)}).`);
+ sync();
+}
+
+/* ---------- dispatch (one entrance for local taps, bot moves, network) ---------- */
+function dispatch(a,arg,seat){
+ if(!G||G.phase!=='play')return;
+ if(seat!=null && seat!==G.turn){
+  // only estate management on your own stuff is allowed off-turn? keep strict: nothing off-turn
+  return;
+ }
+ switch(a){
+  case 'roll':actRoll();break;
+  case 'buy':actBuy();break;
+  case 'pass':actPass();break;
+  case 'end':actEnd();break;
+  case 'bail':actBail();break;
+  case 'oak':actOak();break;
+  case 'build':actBuild(arg);break;
+  case 'sellb':actSell(arg);break;
+  case 'mort':actMort(arg);break;
+  case 'unmort':actUnmort(arg);break;
+  case 'callit':callIt();break;
+ }
+}
+
+/* ---------- bots ---------- */
+function botReserve(p){return 120+40*alive().length}
+function botStep(){
+ if(!G||G.phase!=='play')return;
+ const p=curP();
+ if(p.kind!=='bot'||p.out)return;
+ if(G.await==='roll'){
+  if(p.stocks>0){
+   if(p.gojf>0){actOak(); scheduleBot(); return}
+   if(p.cash>BAIL+botReserve(p)&&propsOf(p.i).length<8){actBail(); scheduleBot(); return}
+  }
+  actRoll(); scheduleBot(); return;
+ }
+ if(G.await==='buy'){
+  const i=G.pending.i, s=SP[i];
+  const want = s.t==='prop' ? p.cash>=s.p+botReserve(p)*0.6 : p.cash>=s.p+botReserve(p)*0.4;
+  if(want)actBuy(); else actPass();
+  scheduleBot(); return;
+ }
+ if(G.await==='end'){
+  // unmortgage first if rich
+  for(const i of propsOf(p.i)){
+   if(G.mort[i]&&p.cash>SP[i].p*0.55*1.1+botReserve(p)*2){actUnmort(i)}
+  }
+  // build evenly while comfortably liquid
+  let guard=0;
+  while(guard++<40){
+   const opts=propsOf(p.i).filter(i=>canBuildOn(p.i,i)&&p.cash>=GROUPS[SP[i].g].hc+botReserve(p)+100)
+     .sort((a,b)=>(G.bld[a]||0)-(G.bld[b]||0)||SP[b].p-SP[a].p);
+   if(!opts.length)break;
+   actBuild(opts[0]);
+  }
+  actEnd(); scheduleBot(); return;
+ }
+}
+function scheduleBot(){
+ if(NET.mode==='client')return;
+ clearTimeout(botTimer);
+ if(!G||G.phase!=='play')return;
+ const p=curP();
+ if(p.kind==='bot'&&!p.out){botTimer=setTimeout(botStep, G.fast?15:850)}
+}
+
+/* ================================ UI ================================ */
+const $=id=>document.getElementById(id);
+const UI={};
+let cellEls=[];
+
+function cellSide(i){return i<=10?'b':i<=20?'l':i<=30?'t':'r'}
+function cellPos(i){
+ if(i<=10)return [10,10-i];
+ if(i<=20)return [10-(i-10),0];
+ if(i<=30)return [0,i-20];
+ return [i-30,10];
+}
+function buildBoard(){
+ const b=$('board'); b.innerHTML='';
+ cellEls=[];
+ for(let i=0;i<40;i++){
+  const s=SP[i];
+  const d=document.createElement('div');
+  const [r,c]=cellPos(i);
+  d.className='cell s-'+cellSide(i)+((i%10===0)?' corner':'');
+  d.style.gridRow=(r+1); d.style.gridColumn=(c+1);
+  let inner='';
+  if(s.g)inner+=`<div class="band" style="background:${GROUPS[s.g].c}"></div>`;
+  inner+=`<div class="nm">${s.n}</div>`;
+  if(s.ico)inner+=`<div class="ico">${s.ico}</div>`;
+  if(s.p)inner+=`<div class="pr">${fmt$(s.p)}</div>`;
+  if(s.sub)inner+=`<div class="sub">${s.sub}</div>`;
+  inner+=`<div class="blds"></div><div class="toks"></div>`;
+  d.innerHTML=inner;
+  d.addEventListener('click',()=>UI.showSpace(i));
+  b.appendChild(d);
+  cellEls.push(d);
+ }
+ const ctr=document.createElement('div');
+ ctr.id='center';
+ ctr.innerHTML=`<div id="crestC">${crestSVG()}</div>
+  <div id="cTitle">TREATOPOLY</div>
+  <div id="cSub">Pitminster · Wethersfield · Eastham · The Penobscot · 1584–2026</div>
+  <div id="diceBox"><div class="die" id="d1">?</div><div class="die" id="d2">?</div></div>
+  <div id="cStatus"></div><div id="cLogMini"></div>`;
+ $('board').appendChild(ctr);
+ const db=ctr.querySelector('#diceBox');
+ if(db)db.addEventListener('click',()=>{
+  if(!meCanAct())return;
+  if(G.await==='roll'){animDice(); setTimeout(()=>send('roll'),420)}
+  else if(G.await==='buy'){openBuySheet()}
+  else if(G.await==='end'){openEndSheet()}
+ });
+}
+
+/* fallback sheets: the game stays fully playable even if the action bar is hidden */
+let lastBuyKey='';
+function maybeBuySheet(){
+ if(!G||G.await!=='buy'||!isMyTurn()||!G.pending)return;
+ const key=(G.gid||'')+':'+G.turn+':'+G.pending.i+':'+G.round;
+ if(key===lastBuyKey)return;
+ lastBuyKey=key;
+ openBuySheet();
+}
+function openBuySheet(){
+ if(!G||G.await!=='buy'||!G.pending)return;
+ const i=G.pending.i, s=SP[i], p=curP();
+ const fare=s.t==='journey'?'<div class="rrow"><span>Fare — 1/2/3/4 owned</span><b>$25/$50/$100/$200</b></div>'
+  :s.t==='util'?'<div class="rrow"><span>Rent</span><b>4× or 10× the dice</b></div>'
+  :`<div class="rrow"><span>Rent / full chapter</span><b>${fmt$(s.r[0])} / ${fmt$(s.r[0]*2)}</b></div>
+    <div class="rrow"><span>With homestead 🏛</span><b>${fmt$(s.r[5])}</b></div>`;
+ openSheet(`<div class="shdr">${s.g?`<div class="gband" style="background:${GROUPS[s.g].c}"></div>`:''}
+  <div><h3>${s.n}</h3><div style="font-size:12px;color:#6b5638">${s.g?GROUPS[s.g].label+' · ':''}${s.y||''} — unclaimed</div></div></div>
+  <div class="hist">${s.hist||''}</div>
+  ${fare}
+  <div class="rrow"><span>Price</span><b>${fmt$(s.p)}</b></div>
+  <div class="rrow"><span>Your cash</span><b>${fmt$(p.cash)}</b></div>
+  <div class="sbtns">
+   <button class="abtn buy" ${p.cash<s.p?'disabled':''} onclick="send('buy');UI.close()">Buy — ${fmt$(s.p)}</button>
+   <button class="abtn" onclick="send('pass');UI.close()">Pass</button>
+  </div>`);
+}
+function openEndSheet(){
+ if(!G||G.await!=='end')return;
+ const p=curP();
+ const can=propsOf(p.i).some(i=>canBuildOn(p.i,i)&&p.cash>=GROUPS[SP[i].g].hc);
+ openSheet(`<h3>${p.tok} ${p.name} — done?</h3>
+  <p style="font-size:14px;line-height:1.5">${can?'You can still build sawmills on a complete chapter this turn.':'Nothing left to do but pass the dice.'}</p>
+  <div class="sbtns">
+   ${can?`<button class="abtn buy" onclick="UI.close();UI.showManage()">🪚 Build first</button>`:''}
+   <button class="abtn go" onclick="send('end');UI.close()">End turn ➜</button>
+   <button class="abtn" onclick="UI.close()">Back</button>
+  </div>`);
+}
+
+function isMyTurn(){
+ if(!G)return false;
+ if(NET.mode==='local')return curP().kind==='human';
+ return G.turn===NET.mySeat && curP().kind==='human';
+}
+function meCanAct(){return G&&G.phase==='play'&&isMyTurn()}
+
+function render(){
+ if(!G)return;
+ // players strip
+ const ps=$('pstrip'); ps.innerHTML='';
+ G.players.forEach(p=>{
+  const d=document.createElement('div');
+  d.className='pchip'+(p.i===G.turn?' cur':'')+(p.out?' dead':'');
+  d.innerHTML=`<span class="ptok">${p.tok}</span><b style="color:${p.col}">${p.name}</b>
+   ${(NET.mode!=='local'&&p.i===NET.mySeat)?'<span class="you">YOU</span>':''}
+   <span class="cash">${fmt$(p.cash)}</span>${p.stocks>0?'🪵':''}${p.gojf>0?'🌳'.repeat(p.gojf):''}${p.kind==='bot'?'🤖':''}`;
+  d.addEventListener('click',()=>UI.showPlayer(p.i));
+  ps.appendChild(d);
+ });
+ // board cells: owners, buildings, mortgage, tokens
+ for(let i=0;i<40;i++){
+  const el=cellEls[i]; if(!el)continue;
+  el.classList.toggle('mort',!!G.mort[i]);
+  let own=el.querySelector('.own');
+  if(G.own[i]!=null){
+   if(!own){own=document.createElement('div'); own.className='own'; el.appendChild(own)}
+   own.style.background=G.players[G.own[i]].col;
+  } else if(own)own.remove();
+  const bl=el.querySelector('.blds');
+  if(bl){const b=G.bld[i]||0; bl.innerHTML=b===5?'<div class="home"></div>':'<div class="saw"></div>'.repeat(b)}
+  const tk=el.querySelector('.toks');
+  if(tk){tk.innerHTML=G.players.filter(p=>!p.out&&p.pos===i).map(p=>`<span class="${p.i===G.turn?'curtok':''}">${p.tok}</span>`).join('')}
+ }
+ // dice + status
+ const DIE='⚀⚁⚂⚃⚄⚅';
+ $('d1').textContent=DIE[G.dice[0]-1]||'?';
+ $('d2').textContent=DIE[G.dice[1]-1]||'?';
+ const dbx=$('diceBox');
+ if(dbx&&dbx.classList)dbx.classList.toggle('ready', G.phase==='play'&&isMyTurn()&&(G.await==='roll'||G.await==='buy'||G.await==='end'));
+ const p=curP();
+ let st='';
+ if(G.phase==='over'){
+  const w=G.players[G.winner];
+  st=`👑 ${w.tok} ${w.name} wins the Treat legacy!`;
+ } else if(G.await==='roll'){
+  st=p.stocks>0?`${p.tok} ${p.name} is in the Stocks (${p.stocks} turns left)`:`${p.tok} ${p.name} — tap the dice to roll!`;
+ } else if(G.await==='buy'){
+  st=`${SP[G.pending.i].n} is unclaimed — ${fmt$(SP[G.pending.i].p)}. ${p.tok} ${p.name}, buy it?`;
+ } else if(G.await==='end'){
+  st=`${p.tok} ${p.name} may build, then end the turn (tap the dice to finish).`;
+ }
+ $('cStatus').textContent=st;
+ $('cLogMini').innerHTML=G.log.slice(-2).map(x=>`<div>${x}</div>`).join('');
+ const sl=$('sideLog'); if(sl){sl.innerHTML=G.log.map(x=>`<div>${x}</div>`).join(''); sl.scrollTop=sl.scrollHeight}
+ renderActions();
+ maybeBuySheet();
+}
+
+function renderActions(){
+ const a=$('actionbar'); a.innerHTML='';
+ if(!G)return;
+ const p=curP();
+ const mine=meCanAct();
+ const btn=(label,cls,fn,dis)=>{const b=document.createElement('button'); b.className='abtn '+cls; b.innerHTML=label; b.disabled=!!dis; b.addEventListener('click',fn); a.appendChild(b); return b};
+ if(G.phase==='over'){
+  btn('🏆 Final standings','go',()=>UI.showOver());
+  btn('↩︎ Main menu','',()=>location.reload());
+  return;
+ }
+ if(!mine){
+  const d=document.createElement('div'); d.style.cssText='font-size:14px;color:#6b5638;font-style:italic;padding:10px';
+  d.textContent=p.kind==='bot'?`${p.tok} ${p.name} is thinking…`:`Waiting for ${p.tok} ${p.name}…`;
+  a.appendChild(d);
+  return;
+ }
+ if(G.await==='roll'){
+  if(p.stocks>0){
+   btn('🎲 Roll for doubles','go',()=>send('roll'));
+   btn(`Pay ${fmt$(BAIL)} fine`,'',()=>send('bail'),p.cash<BAIL);
+   if(p.gojf>0)btn('🌳 Use Oak card','',()=>send('oak'));
+  } else {
+   btn('🎲 Roll the dice','go',()=>{animDice(); setTimeout(()=>send('roll'),420)});
+  }
+ } else if(G.await==='buy'){
+  const s=SP[G.pending.i];
+  btn(`Buy — ${fmt$(s.p)}`,'buy',()=>send('buy'),p.cash<s.p);
+  btn('Pass','',()=>send('pass'));
+ } else if(G.await==='end'){
+  btn('🪚 Build','small',()=>UI.showManage());
+  btn('End turn ➜','go',()=>send('end'));
+ }
+}
+function animDice(){ $('d1').classList.add('rolling'); $('d2').classList.add('rolling');
+ setTimeout(()=>{$('d1').classList.remove('rolling'); $('d2').classList.remove('rolling')},400)}
+
+/* ---------- modals ---------- */
+function openSheet(html){$('sheet').innerHTML='<div class="grip"></div>'+html; $('modal').classList.add('on')}
+UI.close=()=>$('modal').classList.remove('on');
+$('modal').addEventListener('click',e=>{if(e.target.id==='modal')UI.close()});
+
+UI.showSpace=(i)=>{
+ const s=SP[i];
+ let h=`<div class="shdr">${s.g?`<div class="gband" style="background:${GROUPS[s.g].c}"></div>`:''}
+   <div><h3>${s.n}</h3><div style="font-size:12px;color:#6b5638">${s.g?GROUPS[s.g].label+' · ':''}${s.y||''}</div></div></div>`;
+ h+=`<div class="hist">${s.hist||''}</div>`;
+ const own=(G&&G.own[i]!=null)?G.players[G.own[i]]:null;
+ if(s.t==='prop'){
+  h+=`<div class="rrow"><span>Price</span><b>${fmt$(s.p)}</b></div>
+   <div class="rrow"><span>Rent</span><b>${fmt$(s.r[0])}</b></div>
+   <div class="rrow"><span>— with the full chapter</span><b>${fmt$(s.r[0]*2)}</b></div>
+   <div class="rrow"><span>With 1🪚 / 2🪚 / 3🪚 / 4🪚</span><b>${fmt$(s.r[1])} / ${fmt$(s.r[2])} / ${fmt$(s.r[3])} / ${fmt$(s.r[4])}</b></div>
+   <div class="rrow"><span>With homestead 🏛</span><b>${fmt$(s.r[5])}</b></div>
+   <div class="rrow"><span>Sawmill cost</span><b>${fmt$(GROUPS[s.g].hc)} each</b></div>
+   <div class="rrow"><span>Mortgage</span><b>${fmt$(s.p/2)}</b></div>
+   <div class="rrow"><span>Owner</span><b>${own?own.tok+' '+own.name:'— unclaimed —'}</b></div>`;
+  if(own)h+=ownerControls(i);
+ } else if(s.t==='journey'){
+  h+=`<div class="rrow"><span>Price</span><b>${fmt$(s.p)}</b></div>
+   <div class="rrow"><span>Fare — 1/2/3/4 Journeys owned</span><b>$25 / $50 / $100 / $200</b></div>
+   <div class="rrow"><span>Owner</span><b>${own?own.tok+' '+own.name:'— unclaimed —'}</b></div>`;
+  if(own)h+=ownerControls(i);
+ } else if(s.t==='util'){
+  h+=`<div class="rrow"><span>Price</span><b>${fmt$(s.p)}</b></div>
+   <div class="rrow"><span>Rent — one Mill</span><b>4 × dice</b></div>
+   <div class="rrow"><span>Rent — both Mills</span><b>10 × dice</b></div>
+   <div class="rrow"><span>Owner</span><b>${own?own.tok+' '+own.name:'— unclaimed —'}</b></div>`;
+  if(own)h+=ownerControls(i);
+ }
+ h+=`<div class="sbtns"><button class="abtn" onclick="UI.close()">Close</button></div>`;
+ openSheet(h);
+};
+function ownerControls(i){
+ if(!G)return '';
+ const p=curP();
+ if(!meCanAct()||G.own[i]!==p.i)return '';
+ let h='<div class="sbtns">';
+ if(canBuildOn(p.i,i)&&p.cash>=GROUPS[SP[i].g].hc)
+  h+=`<button class="abtn buy" onclick="send('build',${i});UI.close()">🪚 Build — ${fmt$(GROUPS[SP[i].g].hc)}</button>`;
+ if((G.bld[i]||0)>0)
+  h+=`<button class="abtn" onclick="send('sellb',${i});UI.close()">Sell building</button>`;
+ if(!G.mort[i]&&(G.bld[i]||0)===0&&!(SP[i].g&&groupIdxs(SP[i].g).some(j=>(G.bld[j]||0)>0)))
+  h+=`<button class="abtn" onclick="send('mort',${i});UI.close()">🏦 Mortgage — get ${fmt$(SP[i].p/2)}</button>`;
+ if(G.mort[i])
+  h+=`<button class="abtn" onclick="send('unmort',${i});UI.close()">Lift mortgage — ${fmt$(Math.ceil(SP[i].p/2*1.1))}</button>`;
+ return h+'</div>';
+}
+UI.showPlayer=(pi)=>{
+ const p=G.players[pi];
+ const props=propsOf(pi).sort((a,b)=>a-b);
+ let h=`<h3>${p.tok} ${p.name} ${p.kind==='bot'?'🤖':''}</h3>
+ <div class="rrow"><span>Cash</span><b>${fmt$(p.cash)}</b></div>
+ <div class="rrow"><span>Net worth</span><b>${fmt$(netWorth(p))}</b></div>
+ <div class="rrow"><span>Position</span><b>${SP[p.pos].n}</b></div>
+ ${p.gojf?`<div class="rrow"><span>Charter Oak cards</span><b>${p.gojf}</b></div>`:''}
+ <div style="margin-top:8px;font-weight:700">Holdings (${props.length})</div>`;
+ if(!props.length)h+=`<div style="font-size:13px;color:#6b5638;padding:6px 0">Nothing yet — the family fortune awaits.</div>`;
+ for(const i of props){
+  const s=SP[i];
+  h+=`<div class="proprow"><div class="sw" style="background:${s.g?GROUPS[s.g].c:'#888'}"></div>
+   <div class="pn">${s.n}${G.mort[i]?' <span class="badx">(mortgaged)</span>':''}</div>
+   <div class="meta">${(G.bld[i]||0)===5?'🏛':'🪚'.repeat(G.bld[i]||0)}</div></div>`;
+ }
+ h+=`<div class="sbtns"><button class="abtn" onclick="UI.close()">Close</button></div>`;
+ openSheet(h);
+};
+UI.showManage=()=>{
+ if(!G)return;
+ const seat=(NET.mode==='local')?G.turn:NET.mySeat;
+ const p=G.players[seat];
+ const props=propsOf(p.i).sort((a,b)=>a-b);
+ let h=`<h3>${p.tok} ${p.name} — the estate</h3>
+ <div class="rrow"><span>Cash</span><b>${fmt$(p.cash)}</b></div>`;
+ if(!props.length)h+=`<div style="font-size:13px;color:#6b5638;padding:8px 0">No deeds yet. Land on a family property and buy it.</div>`;
+ for(const i of props){
+  const s=SP[i]; const b=G.bld[i]||0;
+  h+=`<div class="proprow"><div class="sw" style="background:${s.g?GROUPS[s.g].c:'#888'}"></div>
+   <div><div class="pn">${s.n}${G.mort[i]?' <span class="badx">(mtg)</span>':''}</div>
+   <div class="meta">${b===5?'🏛 homestead':b>0?'🪚'.repeat(b):''}</div></div>
+   <span style="flex:1"></span>
+   <button onclick="UI.close();UI.showSpace(${i})">Manage</button></div>`;
+ }
+ if(NET.mode!=='client'){
+  h+=`<div class="sbtns">
+   <button class="abtn" onclick="UI.confirmCall()">🔔 Call the game (net worth wins)</button>
+   <button class="abtn" onclick="UI.close()">Close</button></div>`;
+ } else {
+  h+=`<div class="sbtns"><button class="abtn" onclick="UI.close()">Close</button></div>`;
+ }
+ openSheet(h);
+};
+UI.confirmCall=()=>{
+ openSheet(`<h3>🔔 Call the game?</h3>
+ <p style="font-size:14px;line-height:1.5">Like a marathon Treat family dinner-table debate, somebody has to end it.
+ The player with the highest <b>net worth</b> (cash + deeds + buildings) wins. Judge William presided over enough
+ estates to know: this is final.</p>
+ <div class="sbtns"><button class="abtn go" onclick="send('callit');UI.close()">Call it</button>
+ <button class="abtn" onclick="UI.close()">Play on</button></div>`);
+};
+UI.showLog=()=>{
+ openSheet(`<h3>📜 The family record</h3><div id="logFull">${G?G.log.map(x=>`<div>${x}</div>`).join(''):''}</div>
+ <div class="sbtns"><button class="abtn" onclick="UI.close()">Close</button></div>`);
+ const lf=$('logFull'); if(lf)lf.scrollTop=lf.scrollHeight;
+};
+UI.showCard=(c)=>{
+ openSheet(`<div class="cardbig"><div class="ct">${c.label==='CHARTER OAK'?'🌳 CHARTER OAK':'📖 FAMILY BIBLE'}</div>
+ <div class="cx">${c.x}</div><div class="cy">drawn by ${c.tok} ${c.name}</div></div>
+ <div class="sbtns"><button class="abtn go" onclick="UI.close()">Continue</button></div>`);
+};
+UI.showOver=()=>{
+ if(!G)return;
+ let rows;
+ if(G.calledIt){rows=G.calledIt.map((r,k)=>`<div class="rrow"><span>${k+1}. ${r.tok} ${r.name}</span><b>${fmt$(r.v)}</b></div>`).join('')}
+ else{rows=G.players.map(p=>`<div class="rrow"><span>${p.tok} ${p.name}</span><b>${p.out?'☠️ bankrupt':fmt$(netWorth(p))}</b></div>`).join('')}
+ const w=G.players[G.winner];
+ openSheet(`<h3>👑 ${w.tok} ${w.name} inherits the legacy!</h3>
+ <p style="font-size:13.5px;font-style:italic;color:#6b5638">Richard would be proud. Fourteen generations of Treats built farms, mills,
+ pulpits, banks, and campaigns — and tonight, ${w.name} built the biggest pile.</p>
+ ${rows}
+ <div class="sbtns"><button class="abtn go" onclick="location.reload()">↩︎ Back to the menu</button>
+ <button class="abtn" onclick="UI.close()">Admire the board</button></div>`);
+};
+UI.showRules=()=>{
+ openSheet(`<h3>How to play</h3>
+ <div style="font-size:14px;line-height:1.6">
+ <p><b>It’s Monopoly, Treat-style.</b> Roll, travel the family’s four centuries, and buy the people and places of
+ the Treat line. Collect ${fmt$(SALARY)} every time you pass <b>SET SAIL</b>.</p>
+ <p><b>Chapters:</b> own every property in a color group (a “chapter” of family history) to double base rent and
+ build <b>sawmills</b> 🪚 (up to 4), then a <b>homestead</b> 🏛. Sawmills must be spread evenly across a chapter, like a fair inheritance.</p>
+ <p><b>Journeys</b> ⛵ are the four great family voyages — own more, charge more. <b>The Mills</b> 🪚🦞 pay 4× or 10× the dice.</p>
+ <p><b>The Stocks</b> 🪵: roll doubles (3 tries), pay ${fmt$(BAIL)}, or play a Charter Oak card. Three doubles in a row sends you there — the constable talks.</p>
+ <p><b>Charter Oak</b> 🌳 and <b>Family Bible</b> 📖 cards carry real family history — windfalls, mill fires, reunions, and one very useful hidden charter.</p>
+ <p><b>Winning:</b> last solvent Treat wins — or the host can 🔔 <b>call the game</b>, and highest net worth takes the legacy. No trading; this family settles things with dice.</p>
+ <p style="font-size:12px;color:#6b5638">Tap any space for its price, rent — and its true history. Every space on this board really happened.</p>
+ </div>
+ <div class="sbtns"><button class="abtn go" onclick="UI.close()">Got it</button></div>`);
+};
+UI.showStory=()=>{
+ openSheet(`<h3>The Treat family, 1584–2026</h3>
+ <div style="font-size:13.5px;line-height:1.6">
+ <p>This board is real history. <b>Richard Treat</b> (born Trott) was baptized at Pitminster, Somerset in 1584, married
+ <b>Alice Gaylord</b> there in 1615, and sailed for New England in 1637. He helped settle Wethersfield and was named in
+ Connecticut’s 1662 Royal Charter.</p>
+ <p>His son <b>Gov. Robert Treat</b> co-founded Milford (1639), led the founding of Newark (1666), commanded militia in King
+ Philip’s War, governed Connecticut for ~15 years — and starred in the Charter Oak affair of 1687, stalling a royal governor
+ while the colony’s charter vanished into an oak tree.</p>
+ <p>Robert’s son <b>Rev. Samuel Treat</b> preached fire and brimstone at Eastham on Cape Cod — and learned the Nauset language,
+ ministering among the Nauset people until 1717. His grandson <b>Lt. Joshua Treat</b> went down east: armorer of Fort Pownall,
+ interpreter of the Penobscot language, first permanent English settler on the Penobscot River, and founder of the Frankfort
+ mills (burned by the British in 1779; rebuilt; ran a century).</p>
+ <p>The Maine Treats built on: <b>Upham Stowers Treat</b> canned America’s first lobster (1842) and gave Treat Island its name.
+ <b>Nathaniel Treat</b> built the Orono brick house now on the National Register. <b>Maj. Joseph Treat</b> surveyed the Penobscot
+ for Maine’s first governor (1820). <b>Charles H. Treat</b> of Frankfort became Treasurer of the United States under Theodore
+ Roosevelt (1905–09).</p>
+ <p><b>Judge William W. Treat</b> (1918–2010), born in Winterport: NH GOP chairman, Secretary of the U.S. Electoral College,
+ probate judge for 25 years, founder of Bank Meridian — and the man Nixon credited for the 1956 New Hampshire write-in.
+ Generation fourteen carries the line today — and in 2026 the family returned to Pitminster, 389 years after Richard left it.</p>
+ <p style="font-style:italic">Fourteen generations, one unbroken male line, verified against the family tree — the governor,
+ the preacher, the pioneer, the judge, and the generations still writing it.</p>
+ </div>
+ <div class="sbtns"><button class="abtn go" onclick="UI.close()">Back</button></div>`);
+};
+function toast(s,ms=2400){const t=$('toast'); t.textContent=s; t.style.display='block'; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none',ms)}
+/* surface unexpected errors instead of silently dead buttons */
+if(typeof window!=='undefined'&&window.addEventListener){
+ window.addEventListener('error',e=>{try{toast('⚠️ '+(e.message||'Something broke — tell the editors'),7000)}catch(_){}});
+}
+
+/* ---------- sync: render + broadcast + bot scheduling ---------- */
+let lastCardShown=null;
+function sync(){
+ if(NET.mode==='host')netBroadcast();
+ render();
+ if(G&&G.lastCard&&G.lastCard!==lastCardShown){
+  lastCardShown=G.lastCard;
+  if(NET.mode!=='client')UI.showCard(G.lastCard);
+ }
+ if(NET.mode!=='client')scheduleBot();
+}
+/* send: local action or network action */
+function send(a,arg){
+ if(NET.mode==='client'){netSend({t:'act',a,arg}); return}
+ dispatch(a,arg,null);
+}
+/* ================================ NET ================================ */
+const PEER_PREFIX='treatopoly26-';
+let LOB=null; // host lobby: {code, seats:[{name,tok,kind,peerId,conn}], maxp}
+let clientConn=null, myPeerId=null, clientLobby=null;
+
+function makeCode(){let s=''; for(let i=0;i<5;i++)s+=CODE_CHARS[rng(CODE_CHARS.length)]; return s}
+function loadPeerJS(){
+ return new Promise((res,rej)=>{
+  if(window.Peer)return res();
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js';
+  s.onload=()=>res(); s.onerror=()=>rej(new Error('no net'));
+  document.head.appendChild(s);
+ });
+}
+function serializableG(){
+ // strip nothing — G is plain data already (conns live in LOB, not G)
+ return G;
+}
+function netBroadcast(){
+ if(!LOB)return;
+ const msg=JSON.stringify({t:'st', gs:serializableG()});
+ for(const s of LOB.seats){if(s.conn&&s.conn.open)s.conn.send(msg)}
+}
+function lobbyBroadcast(){
+ if(!LOB)return;
+ const seats=LOB.seats.map(s=>({name:s.name,tok:s.tok,kind:s.kind}));
+ const msg=JSON.stringify({t:'lobby', code:LOB.code, seats});
+ for(const s of LOB.seats){if(s.conn&&s.conn.open)s.conn.send(msg)}
+ renderHostLobby();
+}
+function hostStartPeer(name,tok){
+ loadPeerJS().then(()=>{
+  const code=makeCode();
+  const peer=new Peer(PEER_PREFIX+code);
+  NET={mode:'host', peer, conns:[], mySeat:0, code, isHost:true};
+  LOB={code, seats:[{name, tok, kind:'human', peerId:'HOST', conn:null}]};
+  peer.on('open',()=>{renderHostLobby()});
+  peer.on('error',err=>{
+   if(String(err.type)==='unavailable-id'){toast('Code collision — trying a new code…'); NET.peer.destroy(); hostStartPeer(name,tok); return}
+   toast('Network error: '+err.type);
+  });
+  peer.on('connection',conn=>{
+   conn.on('data',raw=>{
+    let m; try{m=JSON.parse(raw)}catch(e){return}
+    if(m.t==='hello'){
+     if(G){conn.send(JSON.stringify({t:'busy'})); return}
+     if(LOB.seats.length>=MAX_P){conn.send(JSON.stringify({t:'full'})); return}
+     let tok=m.tok&&!LOB.seats.some(s=>s.tok===m.tok)?m.tok:TOKENS.find(t=>!LOB.seats.some(s=>s.tok===t));
+     LOB.seats.push({name:(m.name||'Cousin').slice(0,14), tok, kind:'human', peerId:conn.peer, conn});
+     lobbyBroadcast();
+    } else if(m.t==='act'&&G){
+     const seat=G.players.findIndex(p=>p.peerId===conn.peer);
+     if(seat>=0&&seat===G.turn)dispatch(m.a,m.arg,seat);
+    }
+   });
+   conn.on('close',()=>{
+    if(!G){ // lobby: drop seat
+     const k=LOB.seats.findIndex(s=>s.conn===conn);
+     if(k>0){LOB.seats.splice(k,1); lobbyBroadcast()}
+     return;
+    }
+    const p=G.players.find(p=>p.peerId===conn.peer);
+    if(p&&!p.out&&p.kind==='human'){
+     p.kind='bot';
+     log(`📡 ${p.tok} ${p.name} lost connection — an ancestor takes over their seat.`);
+     sync();
+    }
+   });
+  });
+ }).catch(()=>toast('Online play needs an internet connection for setup.'));
+}
+function joinGame(code,name,tok){
+ loadPeerJS().then(()=>{
+  const peer=new Peer();
+  NET={mode:'client', peer, conns:[], mySeat:-1, code, isHost:false};
+  peer.on('open',id=>{
+   myPeerId=id;
+   const conn=peer.connect(PEER_PREFIX+code.toUpperCase(),{reliable:true});
+   clientConn=conn;
+   let opened=false;
+   setTimeout(()=>{if(!opened){toast('No room found with code '+code.toUpperCase()); show('mMenu')}},8000);
+   conn.on('open',()=>{opened=true; conn.send(JSON.stringify({t:'hello',name,tok}))});
+   conn.on('data',raw=>{
+    let m; try{m=JSON.parse(raw)}catch(e){return}
+    if(m.t==='lobby'){clientLobby=m; renderClientLobby(m)}
+    else if(m.t==='full'){toast('That room is full (6 max).'); show('mMenu')}
+    else if(m.t==='busy'){toast('That game has already started.'); show('mMenu')}
+    else if(m.t==='st'){
+     G=m.gs;
+     NET.mySeat=G.players.findIndex(p=>p.peerId===myPeerId);
+     if($('mGame').classList.contains('on')===false){show('mGame'); $('roomBadge').style.display=''; $('roomBadge').textContent=NET.code.toUpperCase()}
+     render();
+     if(G.lastCard&&G.lastCard!==lastCardShown){lastCardShown=G.lastCard; UI.showCard(G.lastCard)}
+     if(G.phase==='over')UI.showOver();
+    }
+   });
+   conn.on('close',()=>{if(G&&G.phase==='play')toast('Lost connection to the host.',6000)});
+  });
+  peer.on('error',err=>{
+   if(String(err.type)==='peer-unavailable'){toast('No room found with code '+code.toUpperCase()); show('mMenu')}
+   else toast('Network error: '+err.type);
+  });
+ }).catch(()=>toast('Joining needs an internet connection.'));
+}
+function netSend(m){if(clientConn&&clientConn.open)clientConn.send(JSON.stringify(m))}
+
+/* ---------- lobby & setup screens ---------- */
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on')); $(id).classList.add('on')}
+
+function identityForm(title, sub, withCode, onGo, goLabel){
+ const tokBtns=TOKENS.map(t=>`<button type="button" class="tokpick" data-t="${t}" style="font-size:24px;background:#fffdf6;border:2px solid var(--line);border-radius:10px;padding:6px 10px">${t}</button>`).join('');
+ $('mLobby').innerHTML=`
+  <div id="lobbyCard">
+   <h2 style="margin:0 0 2px;color:var(--red2)">${title}</h2>
+   <div style="font-size:13px;color:#6b5638;margin-bottom:10px">${sub}</div>
+   <div style="font-weight:700;font-size:13px;margin-bottom:4px">Your name</div>
+   <input class="tin" id="fName" maxlength="14" placeholder="e.g. Josh" value="">
+   <div style="font-weight:700;font-size:13px;margin:10px 0 4px">Your token</div>
+   <div id="fToks" style="display:flex;flex-wrap:wrap;gap:6px">${tokBtns}</div>
+   ${withCode?`<div style="font-weight:700;font-size:13px;margin:10px 0 4px">Room code</div>
+   <input class="tin code" id="fCode" maxlength="5" placeholder="•••••" autocapitalize="characters">`:''}
+   <div class="sbtns" style="margin-top:14px">
+    <button class="abtn go" id="fGo">${goLabel}</button>
+    <button class="abtn" onclick="show('mMenu')">Back</button>
+   </div>
+  </div>`;
+ let tok=TOKENS[0];
+ const picks=$('mLobby').querySelectorAll('.tokpick');
+ if(picks[0]){picks[0].style.borderColor='var(--red)'; picks[0].style.background='#f7e6e4'}
+ picks.forEach(b=>b.addEventListener('click',()=>{
+  picks.forEach(x=>{x.style.borderColor='var(--line)';x.style.background='#fffdf6'});
+  b.style.borderColor='var(--red)'; b.style.background='#f7e6e4'; tok=b.dataset.t;
+ }));
+ $('fGo').addEventListener('click',()=>{
+  const name=($('fName').value.trim()||'Player').slice(0,14);
+  const code=withCode?($('fCode').value.trim().toUpperCase()):null;
+  if(withCode&&code.length!==5){toast('Enter the 5-letter room code.'); return}
+  onGo(name,tok,code);
+ });
+ show('mLobby');
+}
+
+UI.hostSetup=()=>{
+ identityForm('🌐 Host an online game','You’ll get a 5-letter code. Anyone with this file + the code can join — phones, laptops, cousins.',false,
+  (name,tok)=>{ $('mLobby').innerHTML=`<div id="lobbyCard"><h2 style="color:var(--red2);margin:0">Opening the room…</h2>
+   <div style="font-size:13px;color:#6b5638;margin-top:6px">Contacting the connection service.</div></div>`; hostStartPeer(name,tok) },'Create room');
+};
+UI.joinSetup=()=>{
+ identityForm('🔑 Join a game','Enter the code your host gave you.',true,
+  (name,tok,code)=>{ $('mLobby').innerHTML=`<div id="lobbyCard"><h2 style="color:var(--red2);margin:0">Joining ${code}…</h2></div>`; joinGame(code,name,tok) },'Join room');
+};
+UI.soloSetup=()=>{
+ identityForm('🐻 Solo vs. the Ancestors','Pick your token; choose how many ancestors rise to face you.',false,
+  (name,tok)=>{ renderSoloCount(name,tok) },'Continue');
+};
+function renderSoloCount(name,tok){
+ $('mLobby').innerHTML=`<div id="lobbyCard"><h2 style="color:var(--red2);margin:0 0 8px">How many ancestors?</h2>
+  <div class="sbtns" id="cnt"></div>
+  <div id="anc" style="font-size:12.5px;color:#6b5638;margin-top:10px;font-style:italic"></div>
+  <div class="sbtns" style="margin-top:8px"><button class="abtn" onclick="show('mMenu')">Back</button></div></div>`;
+ [1,2,3,4,5].forEach(n=>{
+  const b=document.createElement('button'); b.className='abtn'; b.textContent=n;
+  b.addEventListener('click',()=>{
+   const bots=shuffle(BOTS).slice(0,n);
+   const seats=[{name,tok,kind:'human'}].concat(bots.map(bb=>({name:bb.n, tok:TOKENS.includes(bb.tok)&&bb.tok!==tok?bb.tok:TOKENS.find(t=>t!==tok&&!bots.some(x=>x.tok===t)), kind:'bot'})));
+   // ensure unique tokens
+   const used=new Set();
+   for(const s of seats){ if(used.has(s.tok))s.tok=TOKENS.find(t=>!used.has(t)); used.add(s.tok) }
+   startLocal(seats);
+  });
+  $('cnt').appendChild(b);
+ });
+ $('anc').textContent='Tonight’s possible opponents: '+BOTS.map(b=>`${b.n}`).join(', ')+'.';
+}
+UI.localSetup=()=>{
+ let html=`<div id="lobbyCard"><h2 style="color:var(--red2);margin:0 0 8px">🎮 Pass &amp; Play</h2>
+ <div style="font-size:13px;color:#6b5638;margin-bottom:8px">2–6 players sharing this screen. Add bot ancestors to fill seats.</div>
+ <div id="ppRows"></div>
+ <div class="sbtns"><button class="abtn small" id="ppAddH">+ Player</button><button class="abtn small" id="ppAddB">+ Ancestor bot</button></div>
+ <div class="sbtns" style="margin-top:10px"><button class="abtn go" id="ppGo">Start game</button><button class="abtn" onclick="show('mMenu')">Back</button></div></div>`;
+ $('mLobby').innerHTML=html;
+ const rows=[];
+ function redraw(){
+  $('ppRows').innerHTML='';
+  rows.forEach((r,k)=>{
+   const d=document.createElement('div'); d.className='seat';
+   d.innerHTML=`<span class="tok">${r.tok}</span>`+
+    (r.kind==='human'?`<input class="tin" style="flex:1;padding:8px" maxlength="14" value="${r.name}">`:`<span class="nm">${r.name}</span>`)+
+    `<span class="tag">${r.kind==='human'?'player':'ancestor 🤖'}</span>`+
+    (rows.length>2?`<button>✕</button>`:'');
+   if(r.kind==='human')d.querySelector('input').addEventListener('input',e=>{r.name=e.target.value});
+   const x=d.querySelector('button'); if(x)x.addEventListener('click',()=>{rows.splice(k,1); redraw()});
+   $('ppRows').appendChild(d);
+  });
+ }
+ function freeTok(){return TOKENS.find(t=>!rows.some(r=>r.tok===t))}
+ function addH(){if(rows.length>=MAX_P)return; rows.push({name:'Player '+(rows.filter(r=>r.kind==='human').length+1), tok:freeTok(), kind:'human'}); redraw()}
+ function addB(){if(rows.length>=MAX_P)return; const b=shuffle(BOTS).find(b=>!rows.some(r=>r.name===b.n)); if(!b)return;
+  rows.push({name:b.n, tok:TOKENS.includes(b.tok)&&!rows.some(r=>r.tok===b.tok)?b.tok:freeTok(), kind:'bot'}); redraw()}
+ addH(); addH();
+ $('ppAddH').addEventListener('click',addH);
+ $('ppAddB').addEventListener('click',addB);
+ $('ppGo').addEventListener('click',()=>{
+  rows.forEach(r=>{r.name=(r.name.trim()||'Player').slice(0,14)});
+  startLocal(rows.map(r=>({name:r.name,tok:r.tok,kind:r.kind})));
+ });
+ show('mLobby');
+};
+function renderHostLobby(){
+ if(!LOB)return;
+ let h=`<div id="lobbyCard">
+  <div style="text-align:center;font-size:13px;color:#6b5638">Room code — read it out, text it, shout it across the reunion:</div>
+  <div id="lobbyCode">${LOB.code}</div>
+  <div style="text-align:center;font-size:12px;color:#6b5638;margin-bottom:10px">Friends open this same file → <b>Join with Code</b>. Works on phones.</div>
+  <div id="seats"></div>
+ </div>
+ <div class="lobrow">
+  <button class="mbtn" id="lobAddBot">+ Ancestor bot</button>
+  <button class="mbtn primary" id="lobStart">Start game (${LOB.seats.length})</button>
+ </div>
+ <div id="lobbyHint">You are the host — the game runs on your screen and the others follow along live. If someone drops, a bot ancestor takes their seat so the game survives.</div>`;
+ $('mLobby').innerHTML=h;
+ const seatsEl=$('seats');
+ LOB.seats.forEach((s,k)=>{
+  const d=document.createElement('div'); d.className='seat';
+  d.innerHTML=`<span class="tok">${s.tok}</span><span class="nm">${s.name}${k===0?' (host)':''}</span>
+   <span class="tag">${s.kind==='bot'?'ancestor 🤖':(k===0?'you':'connected')}</span>`+(k>0?'<button>✕</button>':'');
+  const x=d.querySelector('button');
+  if(x)x.addEventListener('click',()=>{
+   const seat=LOB.seats[k];
+   if(seat.conn)try{seat.conn.close()}catch(e){}
+   LOB.seats.splice(k,1); lobbyBroadcast();
+  });
+  seatsEl.appendChild(d);
+ });
+ $('lobAddBot').addEventListener('click',()=>{
+  if(LOB.seats.length>=MAX_P){toast('Room is full (6).'); return}
+  const b=shuffle(BOTS).find(b=>!LOB.seats.some(s=>s.name===b.n)); if(!b)return;
+  const tok=TOKENS.includes(b.tok)&&!LOB.seats.some(s=>s.tok===b.tok)?b.tok:TOKENS.find(t=>!LOB.seats.some(s=>s.tok===t));
+  LOB.seats.push({name:b.n, tok, kind:'bot', peerId:null, conn:null});
+  lobbyBroadcast();
+ });
+ $('lobStart').addEventListener('click',()=>{
+  if(LOB.seats.length<2){toast('You need at least 2 players — add a bot or wait for a cousin.'); return}
+  newGame(LOB.seats.map(s=>({name:s.name,tok:s.tok,kind:s.kind,peerId:s.peerId})));
+  show('mGame');
+  $('roomBadge').style.display=''; $('roomBadge').textContent=LOB.code;
+  sync();
+ });
+ show('mLobby');
+}
+function renderClientLobby(m){
+ let h=`<div id="lobbyCard">
+  <div style="text-align:center;font-size:13px;color:#6b5638">You’re in! Waiting for the host to start…</div>
+  <div id="lobbyCode">${m.code}</div><div id="seats"></div></div>
+  <div id="lobbyHint">Keep this screen open. The host’s game will appear here the moment it begins.</div>`;
+ $('mLobby').innerHTML=h;
+ const seatsEl=$('seats');
+ m.seats.forEach((s,k)=>{
+  const d=document.createElement('div'); d.className='seat';
+  d.innerHTML=`<span class="tok">${s.tok}</span><span class="nm">${s.name}${k===0?' (host)':''}</span><span class="tag">${s.kind==='bot'?'ancestor 🤖':'ready'}</span>`;
+  seatsEl.appendChild(d);
+ });
+ show('mLobby');
+}
+function startLocal(seats){
+ NET={mode:'local', peer:null, conns:[], mySeat:0, code:'', isHost:true};
+ newGame(seats);
+ show('mGame');
+ sync();
+}
+
+/* ================================ INIT ================================ */
+function init(){
+ $('crestM').innerHTML=crestSVG();
+ buildBoard();
+}
+if(typeof document!=='undefined'&&document.readyState!=='loading')init();
+else if(typeof document!=='undefined')document.addEventListener('DOMContentLoaded',init);
+
+/* explicit globals (inline onclick handlers + harness) */
+if(typeof window!=='undefined'){ window.UI=UI; window.send=send; window.show=show; }
+
+/* test hooks (headless harness) */
+if(typeof window!=='undefined'){
+ window.TT={newGame,dispatch,botStep,curP,rentOf,netWorth,propsOf,ownsGroup,canBuildOn,callIt,
+  pay,landOn,moveBy,moveTo,drawCard,applyCard,toStocks,liquidate,
+  actRoll,actBuy,actPass,actEnd,actBuild,actSell,actMort,actUnmort,actBail,actOak,nextTurn,
+  get G(){return G}, set G(v){G=v},
+  get NET(){return NET}, set NETx(v){NET=v},
+  startLocal, SP, GROUPS, DECK_C, DECK_B, BOTS, TOKENS};
+}
+</script>
+</body>
+</html>

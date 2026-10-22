@@ -1,0 +1,15 @@
+# Cloudflare Pages project configuration.
+# The site is static files in public/; the family wall and contact form run as
+# Pages Functions in functions/ against a D1 database bound as DB.
+name = "pitminster"
+compatibility_date = "2026-01-01"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pitminster"
+database_id = "REPLACE_WITH_THE_D1_DATABASE_ID"   # from the Cloudflare dashboard after you create the database
+
+# Secrets are set in the dashboard (Pages project > Settings > Variables and Secrets), not here:
+#   ADMIN_KEY         a long random string; the editors' key for admin.html
+#   TURNSTILE_SECRET  optional; the Turnstile secret key (the site key goes in public/assets/site.js)

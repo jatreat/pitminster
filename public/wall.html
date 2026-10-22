@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The family wall</title>
+<meta name="description" content="Leave a note for the village and the Pitminster diaspora. Every note is read by a person before it appears.">
+<link rel="canonical" href="https://pitminsterchurchonline.org/wall.html">
+<meta property="og:title" content="The family wall">
+<meta property="og:description" content="Leave a note for the village and the Pitminster diaspora. Every note is read by a person before it appears.">
+<meta property="og:image" content="https://pitminsterchurchonline.org/images/church-from-southeast.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+
+</head>
+<body>
+<header class="masthead"><div class="wrap">
+<a class="brand" href="index.html">Friends of Pitminster</a>
+<span class="brand-sub">St Andrew &amp; St Mary, the village in the Blackdown Hills, and the families who sailed from it</span>
+</div></header>
+<nav class="nav" aria-label="Main"><div class="wrap"><ul><li><a href="church.html">The church</a></li><li><a href="village.html">The village</a></li><li><a href="across.html">Across the water</a></li><li><a href="games.html">Games</a></li><li><a href="wall.html" aria-current="page">Family wall</a></li><li><a href="visit.html">Visit &amp; give</a></li><li><a href="contact.html">Contact</a></li></ul></div></nav>
+
+<section class="pagehead"><div class="wrap">
+<div class="rule"></div>
+<h1>The family wall</h1>
+<p class="lede">A place to leave a note: who you are, which family you belong to if any, where you have ended up, and what you are looking for. Descendants, villagers and visitors are all welcome. A person reads every note before it appears, so there may be a day or two's delay.</p>
+</div></section>
+
+<section class="page"><div class="wrap">
+<div>
+<form id="wall-form" novalidate>
+<div class="rule"></div>
+<h2>Leave a note</h2>
+<div class="field"><label for="w-name">Your name</label><input type="text" id="w-name" name="name" maxlength="80" required autocomplete="name"></div>
+<div class="field"><label for="w-place">Where you are writing from</label><input type="text" id="w-place" name="place" maxlength="80" placeholder="Taunton; Winterport, Maine; Melbourne" autocomplete="off"></div>
+<div class="field"><label for="w-conn">Your connection, if any</label><input type="text" id="w-conn" name="connection" maxlength="120" placeholder="Treat descendant; grew up at Blagdon Hill; just visiting"><span class="hint">Optional.</span></div>
+<div class="field"><label for="w-msg">Your note</label><textarea id="w-msg" name="message" maxlength="1200" required></textarea><span class="hint">Up to 1,200 characters. No street addresses or phone numbers, please; the wall is public.</span></div>
+<div class="field"><label for="w-email">Your email</label><input type="email" id="w-email" name="email" maxlength="120" autocomplete="email"><span class="hint">Optional and never shown. The editors use it only to reply if someone is looking for you.</span></div>
+<div class="hp" aria-hidden="true"><label for="w-web">Leave this empty</label><input type="text" id="w-web" name="website" tabindex="-1" autocomplete="off"></div>
+<div id="w-turnstile" class="field"></div>
+<p style="margin-top:1.25rem"><button class="btn" type="submit" id="w-submit">Post the note</button></p>
+<div id="w-notice" class="notice" hidden></div>
+</form>
+</div>
+<aside class="aside">
+<div class="box">
+<h3>House rules</h3>
+<ul>
+<li>Notes are read by a person before they appear.</li>
+<li>No street addresses, phone numbers or anything you would not say in the churchyard.</li>
+<li>Nothing for sale.</li>
+<li>If you want a note taken down, <a href="contact.html">ask</a> and it will be.</li>
+</ul>
+</div>
+</aside>
+</div></section>
+
+<section class="band"><div class="wrap" style="padding-block:2rem 3rem">
+<div class="rule"></div>
+<h2>Notes</h2>
+<div class="wall" id="wall"><article class="post" data-example>
+<header><b>The editors</b><span>Pitminster and Maine</span></header>
+<p>This is what a note on the wall looks like. Say who you are, which family you belong to if any, where you have ended up, and what you would like to find. Notes are read by a person before they appear.</p>
+<p class="ex">Example note</p>
+</article>
+<article class="post" data-example>
+<header><b>The editors</b><span>on the lane by the church</span></header>
+<p>Villagers are welcome here too: a date for the diary, a photograph from a drawer, a correction to something on these pages. The site is only as good as the people who write on it.</p>
+<p class="ex">Example note</p>
+</article></div>
+<p id="wall-empty" class="muted" hidden style="margin-top:1rem">No notes yet. Leave the first one.</p>
+</div></section>
+<footer class="foot"><div class="wrap">
+<div>
+<p>Friends of Pitminster is an independent community site kept by friends of the village on both sides of the Atlantic. It is not the parish's official site. For services, parish business and giving, the parish's own channels are <a href="https://achurchnearyou.com/church/11367">A Church Near You</a> and the <a href="https://blackdown.org.uk">Blackdown Benefice</a>.</p>
+<p>Photographs are by Geograph contributors under CC BY-SA 2.0. Credits, sources and a privacy note are on the <a href="about.html">About</a> page.</p>
+</div>
+<ul>
+<li><a href="about.html">About this site</a></li>
+<li><a href="contact.html">Contact the editors</a></li>
+<li><a href="index.html">pitminsterchurchonline.org</a></li>
+</ul>
+</div></footer>
+<script src="assets/site.js" defer></script>
+</body>
+</html>
