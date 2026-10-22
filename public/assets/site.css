@@ -143,6 +143,9 @@ small, .small { font-size: .9rem; }
 .pair { display: grid; gap: 1.25rem; margin: 1.6rem 0; }
 @media (min-width: 40rem) { .pair { grid-template-columns: 1fr 1fr; } }
 .pair img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.pair-prog { align-items: start; }
+.pair-prog img { aspect-ratio: auto; object-fit: contain; max-width: 14rem; }
+@media (min-width: 40rem) { .pair-prog { grid-template-columns: minmax(0, 14rem) 1fr; } }
 
 /* the Atlantic timeline: Somerset above the brass line, New England below */
 .tl { overflow-x: auto; padding-block: 1rem .5rem; -webkit-overflow-scrolling: touch; }

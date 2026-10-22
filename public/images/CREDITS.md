@@ -14,3 +14,12 @@ All photographs below are from Geograph Britain and Ireland and are licensed CC 
 - `poundisford-lodge.jpg` — "Poundisford Lodge, Pitminster" © Nick Chipchase, https://www.geograph.org.uk/photo/1207938 (640×426)
 - `from-adcombe-hill.jpg` — "Pitminster : Countryside Scenery" © Lewis Clarke, https://www.geograph.org.uk/photo/7631088 (640×427)
 - `countryside-sellicks-green.jpg` — "Countryside near Sellick's Green" © Derek Harper, https://www.geograph.org.uk/photo/1382182 (640×406)
+
+## Editors' photographs (June 2026)
+
+Taken by the site's editors during the June 2026 visit; free to reuse with a credit to Friends of Pitminster.
+
+- `church-at-dusk.jpg` — the church from the churchyard at dusk (1400×1050)
+- `nave-roof.jpg` — the nave roof looking east, cropped from a photograph taken during the 2026 pageant (1400×310)
+- `treat-brass.jpg` — the 1902 Treat brass, perspective-corrected (1400×791)
+- `pageant-programme.jpg` — the programme of the Pitminster Parish History Pageant, 26–27 June 2026 (900×1445)

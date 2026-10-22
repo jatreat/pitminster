@@ -60,7 +60,7 @@ def header(current):
 FOOTER = """<footer class="foot"><div class="wrap">
 <div>
 <p>Friends of Pitminster is an independent community site kept by friends of the village on both sides of the Atlantic. It is not the parish's official site. For services, parish business and giving, the parish's own channels are <a href="https://achurchnearyou.com/church/11367">A Church Near You</a> and the <a href="https://blackdown.org.uk">Blackdown Benefice</a>.</p>
-<p>Photographs are by Geograph contributors under CC BY-SA 2.0. Credits, sources and a privacy note are on the <a href="about.html">About</a> page.</p>
+<p>Photographs are by the editors and by Geograph contributors under CC BY-SA 2.0. Credits, sources and a privacy note are on the <a href="about.html">About</a> page.</p>
 </div>
 <ul>
 <li><a href="about.html">About this site</a></li>
@@ -101,8 +101,8 @@ INDEX = f"""
 <p>This site is for the people who live here, the people who worship here, and the people far away who come back looking for a name on a brass.</p>
 </div>
 <figure>
-<img src="images/church-from-southeast.jpg" width="640" height="467" alt="The church of St Andrew and St Mary, Pitminster, from the south-east: a square tower rising to an octagon with a lead spire, the churchyard in front" fetchpriority="high">
-<figcaption>St Andrew &amp; St Mary from the south-east. Photograph by Mike Searle, CC BY-SA 2.0.</figcaption>
+<img src="images/church-at-dusk.jpg" width="1400" height="1050" alt="The church of St Andrew and St Mary, Pitminster, at dusk, seen across the churchyard: the tower rising to its octagon and lead spire, a lit cloud behind" fetchpriority="high">
+<figcaption>St Andrew &amp; St Mary from the churchyard, a June evening in 2026.</figcaption>
 </figure>
 </div></section>
 
@@ -168,11 +168,15 @@ CHURCH = """
 <h2>The tower and the leaning spire</h2>
 <p>The west tower is square for two stages and then becomes an octagon, the change marked by a quatrefoil parapet, and the octagon carries a lead-covered spire. Spires are unusual in this corner of Somerset, where church towers are square and flat-topped, and the spire is the first thing you see of Pitminster from the lanes to the south. It is said to lean. When the village staged its own history as a pageant in 1976, one episode recalled the Great Storm of 1703 that damaged it.</p>
 <figure>
-<img src="images/church-winter-light.jpg" width="480" height="640" alt="The tower and lead spire of the church in low winter sunlight, seen from the churchyard" loading="lazy" style="max-width:24rem">
+<img src="images/church-winter-light.jpg" width="480" height="640" alt="The tower and lead spire of the church in low winter sunlight, seen from the churchyard" loading="lazy" style="max-width:min(24rem,100%)">
 <figcaption>The tower from the churchyard. Photograph by Derek Harper, CC BY-SA 2.0.</figcaption>
 </figure>
 
 <h2>Inside</h2>
+<figure>
+<img src="images/nave-roof.jpg" width="1400" height="310" alt="The ribbed wagon roof of the nave, looking east over the pulpit canopy to the chancel arch and the east window" loading="lazy">
+<figcaption>The nave roof, looking east over the pulpit's canopy to the chancel. June 2026.</figcaption>
+</figure>
 <p>The oldest thing in the church is the font: fifteenth century, octagonal, cut from Beer stone, its quatrefoil panels carved with St George and St James of Compostela, with a later panel of Christ. The pulpit is early seventeenth century and one of the few in the district to keep its canopy; its sounding board came from the Bluecoat school at Frome and was probably the work of London craftsmen. Either side of the chancel arch are the turrets of the rood stair, a spiral stair that once led to the rood loft of about 1400. The loft itself went at the Reformation, as most did. By the organ is linenfold panelling; over the chancel, a ceiled and ribbed barrel vault.</p>
 <p>Fragments of medieval glass survive in the upper lights of the Lady chapel's north window. The rest of the glass is late Victorian and later: the Lady chapel's east window of 1894 and west window of 1904, both by Keape, and the chancel's east window, which had decayed so badly by the 1950s that the church commissioned a new one. Jane Grey's <i>The Calling of Andrew</i> was installed in 1989, with help from American descendants of Pitminster families. It shows Christ calling Andrew from his nets: follow me, and I will make you fishers of men.</p>
 
@@ -184,6 +188,10 @@ CHURCH = """
 </figure>
 
 <h2>The American brass</h2>
+<figure>
+<img src="images/treat-brass.jpg" width="1400" height="791" alt="The brass tablet of 1902 in memory of Richard Treat, alias Trott, baptised in this church in 1584, and his son Robert, Governor of Connecticut, erected by their descendant John Harvey Treat of America" loading="lazy">
+<figcaption>The brass of 1902, on the wall of the church. June 2026.</figcaption>
+</figure>
 <p>In the church is a brass tablet placed in 1902 by John Harvey Treat of Lawrence, Massachusetts, the family historian who had published <i>The Treat Family</i> nine years earlier. It commemorates Richard Treat, baptised in this church in 1584, who sailed for New England in 1637 and was named in the Royal Charter of Connecticut, and his son Robert, who became governor of that colony. Their story, and the village's other American connections, are told on the <a href="across.html">Across the water</a> page.</p>
 
 <h2>The church today</h2>
@@ -251,6 +259,10 @@ VILLAGE = """
 <li>The Pitminster Volunteers, raised between 1798 and 1802 against the French invasion that never came.</li>
 <li>Jemima Thompson's hymn, Queen Victoria's jubilee of 1887 marked with a Queen's Acre at Corfe, and the Home Guard and the war dead of 1939 to 1945.</li>
 </ul>
+<div class="pair pair-prog">
+<figure><img src="images/pageant-programme.jpg" width="900" height="1445" alt="The programme of the Pitminster Parish History Pageant, staged in St Andrew and St Mary's church on Friday 26 and Saturday 27 June 2026" loading="lazy" style="aspect-ratio:auto;object-fit:contain"><figcaption>The programme for the 2026 pageant.</figcaption></figure>
+<div><h3>Fifty years on</h3><p>The village did it again. On Friday 26 and Saturday 27 June 2026, half a century after the first, the parish staged a new Pitminster Parish History Pageant inside the church, with painted hills and trees set up in front of the pulpit and the parish's story played out in scenes from the first monks to the ration books of the 1940s. Among the audience were Treat descendants from America, in the village that week for a family reunion.</p></div>
+</div>
 
 <h2>Around the parish</h2>
 <p>Blagdon Hill is the largest settlement, strung along the road that climbs south out of the vale towards Honiton; the Post Office added the Hill to its name in the nineteenth century to tell it from the other Blagdon in north Somerset. It has two pubs, the Lamb and Flag and the Blagdon Inn. Pitminster's own pub, the Queen's Arms on Church Road, stands on what is said to be one of the earliest recorded mill sites in Somerset, with a mill here in 1036 belonging to St Swithun's Priory at Winchester, a flour mill in 1804 and a public house after that. Angersleigh, to the west, has its own church, St Michael, fourteenth century and Grade II* listed. Corfe, Pitminster and Trull still share an almshouse charity.</p>
@@ -378,6 +390,10 @@ ACROSS = """
 </ol>
 
 <h2>Coming back</h2>
+<figure>
+<img src="images/treat-brass.jpg" width="1400" height="791" alt="The 1902 brass to Richard Treat, alias Trott, and his son Robert, Governor of Connecticut, erected by John Harvey Treat of America" loading="lazy">
+<figcaption>The brass John Harvey Treat placed in the church in 1902. Photographed June 2026.</figcaption>
+</figure>
 <p>The family has been returning for a long time. John Harvey Treat came in 1902 and left the brass. When the east window needed replacing in the 1980s, American descendants of Pitminster families helped pay for it. In 2026 a party of Treats came to the church for a reunion, stood in front of the tablet, and walked the lanes their ancestor walked before the bells. If you are a Treat, a Gaylord, or descend from any family that left this parish, the <a href="wall.html">family wall</a> is yours; and if you have a record, a photograph or a story that belongs on this page, the editors would like to hear from you.</p>
 <p>The family also tells its story as a game. <a href="games.html">Treatopoly</a> runs the whole line around a board, from Set Sail 1637 to Return to Pitminster.</p>
 </div>
@@ -552,7 +568,7 @@ CONTACT = """
 <div class="box">
 <h3>What helps most</h3>
 <ul>
-<li>A photograph of the Treat brass, the font or the east window: the site has none yet.</li>
+<li>A photograph of the font or the east window: the site has none yet.</li>
 <li>Old photographs of the village, with roughly when and where.</li>
 <li>Parish-register entries or family papers that mention Pitminster families overseas.</li>
 <li>Anything on these pages that is wrong.</li>
@@ -595,7 +611,7 @@ ABOUT = """
 </ul>
 
 <h2>Photographs and artwork</h2>
-<p>The photographs are from Geograph Britain and Ireland and are used under the Creative Commons Attribution-ShareAlike 2.0 licence. Each is credited where it appears:</p>
+<p>The church at dusk, the nave roof, the Treat brass and the 2026 pageant programme were photographed by the site's editors in June 2026 and may be reused freely with a credit to Friends of Pitminster. The other photographs are from Geograph Britain and Ireland and are used under the Creative Commons Attribution-ShareAlike 2.0 licence. Each is credited where it appears:</p>
 <ul>
 <li>Church of St Andrew &amp; St Mary, Pitminster, and the monument to John Coles: Mike Searle (<a href="https://www.geograph.org.uk/photo/3157616">3157616</a>, <a href="https://www.geograph.org.uk/photo/3157709">3157709</a>).</li>
 <li>Pitminster church; Approaching Pitminster; Countryside near Sellick's Green: Derek Harper (<a href="https://www.geograph.org.uk/photo/126380">126380</a>, <a href="https://www.geograph.org.uk/photo/1610088">1610088</a>, <a href="https://www.geograph.org.uk/photo/1382182">1382182</a>).</li>
