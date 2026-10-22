@@ -5,6 +5,9 @@ Run:  python3 tools/build.py
 Output: public/*.html (plain HTML; you can also edit those files directly if you prefer).
 """
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from emblem import mark, seal
 
 ROOT = Path(__file__).resolve().parent.parent
 PUBLIC = ROOT / "public"
@@ -38,6 +41,7 @@ def head(title, desc, canonical, extra=""):
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 {FONTS}
 <link rel="stylesheet" href="assets/site.css">
+<script>document.documentElement.classList.add("js")</script>
 {extra}
 </head>
 <body>
@@ -50,14 +54,15 @@ def header(current):
         for href, label in NAV
     )
     return f"""<header class="masthead"><div class="wrap">
-<a class="brand" href="index.html">Friends of Pitminster</a>
-<span class="brand-sub">St Andrew &amp; St Mary, the village in the Blackdown Hills, and the families who sailed from it</span>
+<a class="brand" href="index.html" aria-label="Friends of Pitminster, home">{mark("hd", "")}<span class="brand-name">Friends of Pitminster</span></a>
+<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+<nav class="nav" id="site-nav" aria-label="Main"><ul>{items}</ul></nav>
 </div></header>
-<nav class="nav" aria-label="Main"><div class="wrap"><ul>{items}</ul></div></nav>
 """
 
 
-FOOTER = """<footer class="foot"><div class="wrap">
+FOOTER = f"""<footer class="foot"><div class="wrap">
+<a class="foot-seal" href="index.html" aria-label="Friends of Pitminster, home">{seal("ft")}</a>
 <div>
 <p>Friends of Pitminster is an independent community site kept by friends of the village on both sides of the Atlantic. It is not the parish's official site. For services, parish business and giving, the parish's own channels are <a href="https://achurchnearyou.com/church/11367">A Church Near You</a> and the <a href="https://blackdown.org.uk">Blackdown Benefice</a>.</p>
 <p>Photographs are by the editors and by Geograph contributors under CC BY-SA 2.0. Credits, sources and a privacy note are on the <a href="about.html">About</a> page.</p>
@@ -94,16 +99,25 @@ EXAMPLE_POSTS = """<article class="post" data-example>
 </article>"""
 
 INDEX = f"""
-<section class="hero"><div class="wrap">
-<div>
+<section class="hero">
+<img class="hero-img" src="images/church-at-dusk.jpg" srcset="images/church-at-dusk-800.jpg 800w, images/church-at-dusk.jpg 1400w, images/church-at-dusk-2200.jpg 2200w" sizes="100vw" width="2200" height="1650" alt="The church of St Andrew and St Mary, Pitminster, at dusk, seen across the churchyard: the tower rising to its octagon and lead spire, a lit cloud behind" fetchpriority="high">
+<div class="hero-copy"><div class="wrap">
 <h1>A church of 1300, a village named in 938, and the families who sailed from it.</h1>
+<p class="hero-credit">St Andrew &amp; St Mary from the churchyard, a June evening in 2026</p>
+</div></div>
+</section>
+
+<section class="intro"><div class="wrap">
+<div class="intro-text">
 <p class="lede">Pitminster sits four miles south of Taunton, where the Vale of Taunton Deane climbs into the Blackdown Hills. Its church has stood since about 1300. Its name was already old when King Athelstan gave the estate to the Bishop of Winchester in 938. And in the 1630s one of its families crossed the Atlantic and became, by way of Connecticut, one of the large families of America.</p>
 <p>This site is for the people who live here, the people who worship here, and the people far away who come back looking for a name on a brass.</p>
 </div>
-<figure>
-<img src="images/church-at-dusk.jpg" width="1400" height="1050" alt="The church of St Andrew and St Mary, Pitminster, at dusk, seen across the churchyard: the tower rising to its octagon and lead spire, a lit cloud behind" fetchpriority="high">
-<figcaption>St Andrew &amp; St Mary from the churchyard, a June evening in 2026.</figcaption>
-</figure>
+<ul class="intro-links">
+<li><a href="church.html">The church</a></li>
+<li><a href="village.html">The village</a></li>
+<li><a href="across.html">The families who sailed</a></li>
+<li><a href="visit.html#give">Give to the church</a></li>
+</ul>
 </div></section>
 
 <section class="band"><div class="wrap doors">
@@ -149,12 +163,12 @@ INDEX = f"""
 """
 
 CHURCH = """
-<section class="pagehead"><div class="wrap">
+<section class="pagehead has-photo"><div class="wrap">
 <div class="rule"></div>
 <h1>The church of St Andrew &amp; St Mary</h1>
 <p class="lede">Built around 1300 on the site of a Saxon church, enlarged in the fifteenth century, restored by the Victorians and twice since, and still in use every month. Grade I listed since 1955.</p>
 <figure>
-<img src="images/church-from-southeast.jpg" width="640" height="467" alt="The church from the south-east, with the chancel, the south aisle and porch, and the tower and spire behind">
+<img src="images/church-from-southeast.jpg" width="640" height="467" alt="The church from the south-east, with the chancel, the south aisle and porch, and the tower and spire behind" fetchpriority="high">
 <figcaption>From the south-east: chancel, south aisle and porch, and the tower rising to its octagon and spire. Photograph by Mike Searle, CC BY-SA 2.0.</figcaption>
 </figure>
 </div></section>
@@ -223,7 +237,7 @@ CHURCH = """
 """
 
 VILLAGE = """
-<section class="pagehead"><div class="wrap">
+<section class="pagehead has-photo"><div class="wrap">
 <div class="rule"></div>
 <h1>The village</h1>
 <p class="lede">Pitminster is a village and parish four miles south of Taunton, on the northern slopes of the Blackdown Hills, looking out over the Vale of Taunton Deane. The parish takes in Blagdon Hill, Angersleigh, Sellick's Green, Duddlestone, Poundisford, Feltham and Woodram, and about 950 people.</p>
@@ -315,10 +329,14 @@ ARMS_SVG = """<svg viewBox="0 0 120 140" role="img" aria-label="The Treat arms: 
 </svg>"""
 
 ACROSS = """
-<section class="pagehead"><div class="wrap">
+<section class="pagehead has-photo"><div class="wrap">
 <div class="rule"></div>
 <h1>Across the water</h1>
 <p class="lede">In the 1630s a Pitminster family named Trott sailed for New England. They became the Treats, and four centuries later their descendants are still coming back to the church where it began.</p>
+<figure class="natural">
+<img src="images/treat-brass.jpg" width="1400" height="791" alt="The 1902 brass to Richard Treat, alias Trott, baptised in this church in 1584, and his son Robert, Governor of Connecticut, erected by their descendant John Harvey Treat of America" fetchpriority="high">
+<figcaption>The brass John Harvey Treat placed in the church in 1902, photographed in June 2026.</figcaption>
+</figure>
 </div></section>
 
 <section class="band"><div class="wrap" style="padding-block:1.5rem 2rem">
@@ -390,10 +408,6 @@ ACROSS = """
 </ol>
 
 <h2>Coming back</h2>
-<figure>
-<img src="images/treat-brass.jpg" width="1400" height="791" alt="The 1902 brass to Richard Treat, alias Trott, and his son Robert, Governor of Connecticut, erected by John Harvey Treat of America" loading="lazy">
-<figcaption>The brass John Harvey Treat placed in the church in 1902. Photographed June 2026.</figcaption>
-</figure>
 <p>The family has been returning for a long time. John Harvey Treat came in 1902 and left the brass. When the east window needed replacing in the 1980s, American descendants of Pitminster families helped pay for it. In 2026 a party of Treats came to the church for a reunion, stood in front of the tablet, and walked the lanes their ancestor walked before the bells. If you are a Treat, a Gaylord, or descend from any family that left this parish, the <a href="wall.html">family wall</a> is yours; and if you have a record, a photograph or a story that belongs on this page, the editors would like to hear from you.</p>
 <p>The family also tells its story as a game. <a href="games.html">Treatopoly</a> runs the whole line around a board, from Set Sail 1637 to Return to Pitminster.</p>
 </div>
@@ -491,10 +505,14 @@ WALL = """
 """
 
 VISIT = """
-<section class="pagehead"><div class="wrap">
+<section class="pagehead has-photo"><div class="wrap">
 <div class="rule"></div>
 <h1>Visit, worship &amp; give</h1>
 <p class="lede">The church is open for worship once a month and welcomes visitors at other times; the village is a good day out from Taunton in any season. The parish, not this site, receives every gift to the church.</p>
+<figure>
+<img src="images/approaching-pitminster.jpg" width="640" height="480" alt="A footpath across a field towards Pitminster, the church spire visible ahead" fetchpriority="high">
+<figcaption>The footpath from Woodram Lane, the spire ahead. Photograph by Derek Harper, CC BY-SA 2.0.</figcaption>
+</figure>
 </div></section>
 
 <section class="page"><div class="wrap">
