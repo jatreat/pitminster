@@ -33,7 +33,7 @@ def head(title, desc, canonical, extra=""):
 <link rel="canonical" href="https://pitminsterchurchonline.org/{canonical}">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
-<meta property="og:image" content="https://pitminsterchurchonline.org/images/church-from-southeast.jpg">
+<meta property="og:image" content="https://pitminsterchurchonline.org/images/church-at-dusk.jpg">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 {FONTS}
