@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: /admin.html
 Disallow: /api/
-Sitemap: https://pitminsterchurchonline.org/sitemap.xml
+Sitemap: https://friendsofpitminster.org/sitemap.xml

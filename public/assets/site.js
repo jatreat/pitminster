@@ -107,7 +107,7 @@
           }
         })
         .catch(function () {
-          notice(n, "err", "Posting is not switched on in this preview. It works once the site is live at pitminsterchurchonline.org.");
+          notice(n, "err", "Posting is not switched on in this preview. It works once the site is live at friendsofpitminster.org.");
         })
         .then(function () { $("w-submit").disabled = false; });
     });
@@ -133,7 +133,7 @@
           else notice(n, "err", (res.j && res.j.error) || "The message could not be sent. Try again in a few minutes.");
         })
         .catch(function () {
-          notice(n, "err", "Sending is not switched on in this preview. It works once the site is live at pitminsterchurchonline.org.");
+          notice(n, "err", "Sending is not switched on in this preview. It works once the site is live at friendsofpitminster.org.");
         })
         .then(function () { $("c-submit").disabled = false; });
     });

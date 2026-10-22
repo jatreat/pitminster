@@ -30,10 +30,10 @@ def head(title, desc, canonical, extra=""):
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title}</title>
 <meta name="description" content="{desc}">
-<link rel="canonical" href="https://pitminsterchurchonline.org/{canonical}">
+<link rel="canonical" href="https://friendsofpitminster.org/{canonical}">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
-<meta property="og:image" content="https://pitminsterchurchonline.org/images/church-from-southeast.jpg">
+<meta property="og:image" content="https://friendsofpitminster.org/images/church-at-dusk.jpg">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 {FONTS}
@@ -65,7 +65,7 @@ FOOTER = """<footer class="foot"><div class="wrap">
 <ul>
 <li><a href="about.html">About this site</a></li>
 <li><a href="contact.html">Contact the editors</a></li>
-<li><a href="index.html">pitminsterchurchonline.org</a></li>
+<li><a href="index.html">friendsofpitminster.org</a></li>
 </ul>
 </div></footer>
 <script src="assets/site.js" defer></script>

@@ -1,4 +1,6 @@
-# Friends of Pitminster — pitminsterchurchonline.org
+# Friends of Pitminster — friendsofpitminster.org
+
+The site's address is friendsofpitminster.org (registered at Cloudflare, October 2026). The older domain, pitminsterchurchonline.org, sits in a separate GoDaddy account; once that account is recovered, move its nameservers to Cloudflare and add it as a redirect to friendsofpitminster.org (Rules → Redirect Rules, or a Bulk Redirect), then transfer it to Cloudflare Registrar.
 
 A static community site about the church of St Andrew & St Mary, the village of Pitminster, and the families who sailed from it, with a moderated family wall, a contact form, and the family's games.
 
