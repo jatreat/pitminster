@@ -5,6 +5,7 @@ Run:  python3 tools/build.py
 Output: public/*.html (plain HTML; you can also edit those files directly if you prefer).
 """
 from pathlib import Path
+import re
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from emblem import mark, seal
@@ -84,8 +85,19 @@ FOOTER = f"""<footer class="foot"><div class="wrap">
 """
 
 
+def clean_links(html):
+    """Point internal links at the addresses Cloudflare serves (/church, not church.html),
+    so Google never follows a link into a redirect."""
+    def fix(m):
+        path, frag = m.group(1), m.group(2) or ""
+        if path == "index":
+            return f'href="/{frag}"'
+        return f'href="{path}{frag}"'
+    return re.sub(r'href="(?!https?:|//|/)([A-Za-z0-9_\-/]+)\.html(#[^"]*)?"', fix, html)
+
+
 def page(filename, title, desc, body, extra_head=""):
-    html = head(title, desc, filename, extra_head) + header(filename) + body + FOOTER
+    html = clean_links(head(title, desc, filename, extra_head) + header(filename) + body + FOOTER)
     (PUBLIC / filename).write_text(html, encoding="utf-8")
     print("wrote", filename, len(html))
 
