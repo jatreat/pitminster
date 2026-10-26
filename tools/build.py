@@ -12,7 +12,7 @@ from emblem import mark, seal
 ROOT = Path(__file__).resolve().parent.parent
 PUBLIC = ROOT / "public"
 
-FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap">'
+FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Public+Sans:wght@400;500;600&display=swap">'
 
 NAV = [
     ("church.html", "The church"),
@@ -108,6 +108,8 @@ INDEX = f"""
 <img class="hero-img" src="images/church-at-dusk.jpg" srcset="images/church-at-dusk-800.jpg 800w, images/church-at-dusk.jpg 1400w, images/church-at-dusk-2200.jpg 2200w" sizes="100vw" width="2200" height="1650" alt="The church of St Andrew and St Mary, Pitminster, at dusk, seen across the churchyard: the tower rising to its octagon and lead spire, a lit cloud behind" fetchpriority="high">
 <div class="hero-copy"><div class="wrap">
 <h1>A church of 1300, a village named in 938, and the families who sailed from it.</h1>
+<p class="hero-sub">A community site for St Andrew &amp; St Mary, Pitminster, and its friends on both sides of the Atlantic.</p>
+<div class="hero-actions"><a class="btn btn-brass" href="church.html">Explore the church</a><a class="btn btn-ghost" href="wall.html">Leave a note on the family wall</a></div>
 <p class="hero-credit">St Andrew &amp; St Mary from the churchyard, a June evening in 2026</p>
 </div></div>
 </section>
@@ -159,7 +161,7 @@ INDEX = f"""
 <h2>Visit, worship, give</h2>
 <p>The church is on Church Lane, Pitminster, Taunton TA3 7AZ. Holy Communion is held on the fourth Sunday of the month at 10.30am, shared with St Nicholas, Corfe; the rest of the month the benefice's services move among its six churches, and <a href="https://achurchnearyou.com/church/11367">A Church Near You</a> has the current list.</p>
 <p>The building is looked after by its parish, which has to find the money to keep a seven-hundred-year-old church standing. Gifts go to the parish directly, never through this site.</p>
-<p style="margin-top:1.25rem"><a class="btn btn-quiet" href="visit.html">Plan a visit</a> &nbsp; <a class="btn" href="visit.html#give">How to give</a></p>
+<p class="btn-row"><a class="btn" href="visit.html#give">How to give</a><a class="btn btn-quiet" href="visit.html">Plan a visit</a></p>
 <hr>
 <h2 style="font-size:1.35rem">Play the family's history</h2>
 <p><a href="games.html">Treatopoly</a> runs the Treats' four centuries around a board, from Set Sail 1637 to Return to Pitminster, and plays online with family in other houses. <a href="games.html">The Treat Trail</a> makes the same journey the hard way, one stop and one ration at a time.</p>
@@ -448,17 +450,19 @@ GAMES = """
 <section class="page"><div class="wrap" style="display:block">
 <div class="games">
 <article class="game">
+<img class="cover" src="images/treatopoly-cover.jpg" width="800" height="500" alt="The Treatopoly title screen, with the Treat shield and options to play against the ancestors, pass and play, or host an online game" loading="lazy">
 <h2>Treatopoly</h2>
 <p class="status">Playable now, on a phone or a laptop. Two to six players.</p>
 <p>The family's board game. Forty spaces run in order from Set Sail 1637 to Return to Pitminster: the Atlantic crossing, the Passaic voyage, the Pownall expedition and the Penobscot survey are the four journeys, Treat Mills and the lobster cannery are the utilities, the Stocks stand in for jail and Andros Arrives sends you there, and free parking is a lobster bake. The Charter Oak and the Family Bible are the two decks. Play online with family in other houses, or against bots named for the ancestors.</p>
 <p class="small muted">Tap the dice to roll. No trading and no auctions; the host can call the game at any point and the biggest net worth wins.</p>
-<p><a class="btn" href="games/treatopoly.html">Play Treatopoly</a></p>
+<p class="go"><a class="btn" href="games/treatopoly.html">Play Treatopoly</a></p>
 </article>
 <article class="game">
+<img class="cover" src="images/treat-trail-cover.jpg" width="800" height="500" alt="The Treat Trail title screen, with the Treat arms and the route from Pitminster to Connecticut, Cape Cod, Maine and back" loading="lazy">
 <h2>The Treat Trail</h2>
 <p class="status">Playable now, on a phone or a laptop.</p>
 <p>The first of the family's games, in the style of the Oregon Trail. Three hundred and eighty-nine years from Pitminster: the Atlantic crossing, Wethersfield, Newark, the Penobscot, and on. Buy provisions, mind the rations and the weather, and get the family through. Every stop carries a line of the real history, and the road ends where it began.</p>
-<p><a class="btn" href="games/treat-trail.html">Play The Treat Trail</a></p>
+<p class="go"><a class="btn" href="games/treat-trail.html">Play The Treat Trail</a></p>
 </article>
 </div>
 <p class="small muted" style="margin-top:2rem;max-width:66ch">These are fan-made family histories. The landscapes, buildings and people are stylised. If a date or a name in them is wrong, <a href="contact.html">tell the editors</a> and it will be fixed in the next version. The family keeps its own page, with the games, the notable Treats and the line of descent, at <a href="https://treatfamily.org">treatfamily.org</a>.</p>

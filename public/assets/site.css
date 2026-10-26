@@ -286,3 +286,80 @@ input:focus, textarea:focus { border-color: var(--ham); outline: none; box-shado
   a, .btn, .nav a { transition: color .15s ease, background-color .15s ease, border-color .15s ease; }
 }
 @media print { .nav, .menu-toggle, .foot, .btn { display: none; } .masthead, .hero { background: none; color: #000; } .hero { height: auto; } .hero-img, .hero::after { display: none; } .hero-copy { position: static; color: #000; } }
+
+/* ------------------------------------------------------------------
+   Polish, October 2026. Caslon stays for everything read; Public Sans,
+   the plain sans used on joshtreat.com and treatfamily.org, takes over
+   the things you press, scan or fill in: the menu, buttons, captions,
+   labels and small print. Panels become cards with a brass top edge.
+   ------------------------------------------------------------------ */
+:root { --ui: "Public Sans", "Helvetica Neue", Arial, sans-serif; --radius: 3px; }
+body { font-size: 1.125rem; line-height: 1.65; }
+
+/* masthead: stays with you as you scroll */
+.masthead { position: sticky; top: 0; z-index: 20; }
+.masthead .wrap { min-height: 4rem; }
+.nav a { font-family: var(--ui); font-size: .95rem; font-weight: 500; letter-spacing: .005em; }
+.menu-toggle { font-family: var(--ui); font-size: .95rem; font-weight: 600; border-radius: var(--radius); padding: .45rem .95rem; }
+@media (max-width: 71.99rem) {
+  .js .nav.open { max-height: calc(100svh - 4.5rem); overflow-y: auto; }
+  .nav a { font-size: 1.05rem; }
+}
+
+/* buttons */
+.btn { font-family: var(--ui); font-weight: 600; font-size: 1rem; line-height: 1.2; padding: .8rem 1.3rem; border-radius: var(--radius); }
+.btn-brass, .band-dark .btn-brass { background: var(--night-brass); border-color: var(--night-brass); color: #1B2024; }
+.btn-brass:hover { background: #E2BF78; border-color: #E2BF78; color: #1B2024; }
+.btn-ghost { background: transparent; border-color: rgba(243,239,231,.55); color: #F3EFE7; }
+.btn-ghost:hover { background: rgba(243,239,231,.1); border-color: #F3EFE7; color: #F3EFE7; }
+.btn-row { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.4rem; }
+
+/* hero: a line under the headline and two clear ways in */
+.hero { height: auto; min-height: min(88svh, 54rem); display: flex; align-items: flex-end; }
+@media (min-width: 56rem) { .hero { height: auto; min-height: min(88vh, 54rem); } }
+.hero::after { background: linear-gradient(to top, rgba(17,21,24,.92) 0%, rgba(17,21,24,.62) 38%, rgba(17,21,24,.05) 72%); }
+.hero-copy { position: relative; width: 100%; padding-top: 14rem; }
+.hero-sub { font-size: clamp(1.1rem, 1rem + .5vw, 1.35rem); line-height: 1.45; color: rgba(243,239,231,.9); max-width: 44ch; margin-top: 1rem; text-shadow: 0 1px 12px rgba(0,0,0,.35); }
+.hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.6rem; }
+.hero-credit { font-family: var(--ui); font-size: .8rem; margin-top: 1.4rem; }
+
+/* small print and labels in the sans */
+figcaption, .hero-credit, .small, small, .aside dt, .field label, .field .hint, .post header span, .post .ex,
+.game .status, .tl-key, .tl-item .where, .foot, .notice, .tabs button, .admin-row .acts button { font-family: var(--ui); }
+figcaption { font-size: .85rem; }
+.small, small { font-size: .88rem; }
+.aside dt { font-size: .78rem; font-weight: 600; letter-spacing: .02em; color: var(--lead); margin-top: .2rem; }
+.field label { font-size: .92rem; font-weight: 600; }
+.field .hint { font-size: .82rem; }
+.foot { font-size: .92rem; }
+.foot .wrap { font-size: .92rem; }
+
+/* section titles get a little more presence */
+.strip h2, .band h2 { font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.3rem); }
+.pagehead .wrap { padding-block: 2.75rem 1.75rem; }
+
+/* intro links */
+.intro-links a { font-size: 1.25rem; padding: .95rem 0; }
+
+/* the three doors become cards */
+.doors { gap: 1.75rem; padding-block: 3rem 3.5rem; }
+.door { background: var(--paper); border: 1px solid var(--line); border-top: 3px solid var(--ham); gap: .7rem; padding-bottom: 1.5rem; }
+.door > :not(img) { margin-inline: 1.35rem; }
+.door img { margin-bottom: .4rem; }
+.door h2 { font-size: 1.75rem; }
+.door a.more { font-family: var(--ui); font-weight: 600; font-size: .98rem; border-bottom: 0; text-decoration: underline; text-decoration-color: var(--ham); text-underline-offset: 4px; }
+
+/* panels: sidebar boxes, game cards, wall notes */
+.aside .box, .game, .post { background: var(--paper); border: 1px solid var(--line); border-top: 3px solid var(--ham); }
+.aside .box { padding: 1.2rem 1.35rem 1.3rem; }
+.aside .box h3 { font-size: 1.3rem; margin-bottom: .7rem; }
+.game { padding: 0 1.5rem 1.6rem; }
+.game .cover { margin: 0 -1.5rem .5rem; width: calc(100% + 3rem); max-width: none; aspect-ratio: 8 / 5; object-fit: cover; border-bottom: 1px solid var(--line); }
+.game h2 { font-size: 1.75rem; }
+.game .go { margin-top: auto; padding-top: .5rem; }
+.post { padding: 1.1rem 1.25rem 1.2rem; }
+
+/* forms */
+input[type="text"], input[type="email"], input[type="password"], textarea, select { border-radius: var(--radius); border-bottom-color: var(--line); padding: .65rem .8rem; }
+.notice { border-radius: 0 var(--radius) var(--radius) 0; font-size: .95rem; }
+input[type="text"], input[type="email"], input[type="password"], textarea, select { font-family: var(--ui); font-size: 1rem; }
