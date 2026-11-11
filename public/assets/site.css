@@ -363,3 +363,14 @@ figcaption { font-size: .85rem; }
 input[type="text"], input[type="email"], input[type="password"], textarea, select { border-radius: var(--radius); border-bottom-color: var(--line); padding: .65rem .8rem; }
 .notice { border-radius: 0 var(--radius) var(--radius) 0; font-size: .95rem; }
 input[type="text"], input[type="email"], input[type="password"], textarea, select { font-family: var(--ui); font-size: 1rem; }
+
+/* An illustration set into the page: the paper tone is blended away so only the line work shows */
+.engraving-art { position: relative; }
+.engraving img, .engraving video { display: block; width: 100%; height: auto; filter: brightness(1.18); mix-blend-mode: multiply;
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 72%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 72%, transparent 100%); }
+.engraving-art video { position: absolute; inset: 0; height: 100%; object-fit: cover; }
+.engraving figcaption { text-align: center; }
+@media (prefers-reduced-motion: reduce) { .engraving-art video { display: none; } }
+/* On the dark theme the drawing is inverted to light line on slate */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .engraving img, :root:not([data-theme="light"]) .engraving video { filter: brightness(1.18) invert(1) hue-rotate(180deg); mix-blend-mode: screen; } }
+:root[data-theme="dark"] .engraving img, :root[data-theme="dark"] .engraving video { filter: brightness(1.18) invert(1) hue-rotate(180deg); mix-blend-mode: screen; }
